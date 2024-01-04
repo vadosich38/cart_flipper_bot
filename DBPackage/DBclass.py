@@ -1,0 +1,2 @@
+class DBMethods:
+    pass
