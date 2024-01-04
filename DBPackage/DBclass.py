@@ -6,10 +6,15 @@ class DBMethods:
 ## пример структуры DB. твое мнение?
 
 # Создаем соединение с базой данных
+#TODO: соединение нужно создавать в другом файле в функции get_connection,
+# используется одно соединение и хранится как константа. В каждый метод передается соединение для экономии транзакций
+
+#TODO: курсор создается в каждом методе
 conn = sqlite3.connect('flashcards.db')
 cursor = conn.cursor()
 
 # Создаем таблицу пользователей
+#TODO: user_id, user_name, группы принадлежащие юзеру: список, словарь, кортеж: названия или id
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
         user_id INTEGER PRIMARY KEY,
@@ -18,6 +23,7 @@ cursor.execute('''
 ''')
 
 # Создаем таблицу групп
+#TODO: как здесь передается связь из групп в коллекции?
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS groups (
         group_id INTEGER PRIMARY KEY,
@@ -28,6 +34,7 @@ cursor.execute('''
 ''')
 
 # Создаем таблицу сетов (коллекций)
+#TODO: как здесь передается связь из коллекций в пары?
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS sets (
         set_id INTEGER PRIMARY KEY,
@@ -40,6 +47,7 @@ cursor.execute('''
 ''')
 
 # Создаем таблицу карточек
+#TODO: как по тз: объект 1, тип данных, обхект 2, тип данных
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS cards (
         card_id INTEGER PRIMARY KEY,
