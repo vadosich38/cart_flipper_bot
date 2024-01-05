@@ -1,16 +1,14 @@
-# This is a sample Python script.
+"""
+Main bot code
+"""
+import logging
+import aiogram
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+logger = logging.getLogger('card_flipper_bot')
+logging.basicConfig(level=logging.INFO,
+                    filename='log.log',
+                    format='%(asctime)s [%(levelname)s] %(message)s',
+                    datefmt='%H:%M:%S')
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-    print('Внес изменения')
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# TODO: Чтото сделать
+# новые изменения
