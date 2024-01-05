@@ -7,10 +7,14 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
+
+from bot_set.bot_states import BotStates
 
 collections_cmd_router = Router()
 
 
 @collections_cmd_router.message(Command("Открыть мои коллекции"))
-async def collections_cmd(message: Message) -> None:
+async def collections_cmd(message: Message, state: FSMContext) -> None:
+    await state.set_state(BotStates.collections_review)
     pass

@@ -21,7 +21,7 @@ class BotStates(StatesGroup):
     collections_review = State()
 
     collection_adding = State()
-    collection_edition = State()
+    collection_editing = State()
 
     paar_adding = State()
     paar_editing = State()
