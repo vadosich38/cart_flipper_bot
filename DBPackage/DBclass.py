@@ -1,93 +1,107 @@
 import sqlite3
+from loader import logger
 
 
 class DBMethods:
-    pass
-## пример структуры DB. твое мнение?
+    DATABASE_NAME = 'main.db'
 
-# Создаем соединение с базой данных
-#TODO: соединение нужно создавать в другом файле в функции get_connection,
-# используется одно соединение и хранится как константа. В каждый метод передается соединение для экономии транзакций
+    @staticmethod
+    def connect(func):
+        """Database connection wrapper"""
+        def wrapper(*args, **kwargs):
+            try:
+                connection = sqlite3.connect(DBMethods.DATABASE_NAME)
+                cur = connection.cursor()
+                logger.debug('Database connection successful')
+                result = func(cur, *args, **kwargs)
+                connection.commit()
+                connection.close()
+                return result
+            except Exception as exc:
+                logger.error(f'Error connecting database: {exc}')
+        return wrapper
 
-#TODO: курсор создается в каждом методе
-conn = sqlite3.connect('flashcards.db')
-cursor = conn.cursor()
+    @staticmethod
+    @connect
+    def create_tables(cur):
+        """Creating tables in DB if they're not exist"""
+        logger.debug('Creating database tables')
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS Users (
+                user_id INTEGER PRIMARY KEY,
+                telegram_id INTEGER NOT NULL
+            )
+        ''')
 
-# Создаем таблицу пользователей
-#TODO: user_id, user_name, группы принадлежащие юзеру: список, словарь, кортеж: названия или id
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        user_id INTEGER PRIMARY KEY,
-        username TEXT NOT NULL UNIQUE
-    )
-''')
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS Collections (
+                collection_id INTEGER PRIMARY KEY,
+                collection_name TEXT NOT NULL,
+                user_id INTEGER,
+                FOREIGN KEY (user_id) REFERENCES Users(user_id)
+            )
+        ''')
 
-# Создаем таблицу групп
-#TODO: как здесь передается связь из групп в коллекции?
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS groups (
-        group_id INTEGER PRIMARY KEY,
-        user_id INTEGER,
-        name TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (user_id)
-    )
-''')
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS Cards (
+                card_id INTEGER PRIMARY KEY,
+                card_value_1 TEXT NOT NULL,
+                card_value_2 TEXT NOT NULL,
+                collection_id INTEGER,
+                FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
+            )
+        ''')
 
-# Создаем таблицу сетов (коллекций)
-#TODO: как здесь передается связь из коллекций в пары?
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS sets (
-        set_id INTEGER PRIMARY KEY,
-        user_id INTEGER,
-        group_id INTEGER,
-        name TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (user_id),
-        FOREIGN KEY (group_id) REFERENCES groups (group_id)
-    )
-''')
+    @staticmethod
+    @connect
+    def add_user(cur, telegram_id: int):
+        """Add user record to the database"""
+        logger.debug(f'Making user:{telegram_id} record in database')
+        cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
 
-# Создаем таблицу карточек
-#TODO: как по тз: объект 1, тип данных, обхект 2, тип данных
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS cards (
-        card_id INTEGER PRIMARY KEY,
-        set_id INTEGER,
-        word TEXT NOT NULL,
-        translation TEXT NOT NULL,
-        FOREIGN KEY (set_id) REFERENCES sets (set_id)
-    )
-''')
+    @staticmethod
+    @connect
+    def add_collection_by_telegram_id(cur, telegram_id: int, collection_name: str):
+        """Add collection record to the database"""
+        logger.debug(f'Making collection record in database')
+        # Getting user_id
+        cur.execute('SELECT user_id FROM Users WHERE telegram_id = ?', (telegram_id,))
+        user_id = cur.fetchone()
+        # Adding collection if user exits
+        if user_id:
+            cur.execute('INSERT OR IGNORE INTO Collections (collection_name, user_id) VALUES (?, ?)',
+                        (collection_name, user_id[0]))
+        else:
+            logger.warning(f'User with telegram_id {telegram_id} not found. Collection not added.')
 
-# Вставляем пример данных
-cursor.executemany('''
-    INSERT OR IGNORE INTO users (username) VALUES (?)
-''', [('user1',), ('user2',)])
+    @staticmethod
+    @connect
+    def add_card_by_collection_id(cur, collection_id, card_value_1, card_value_2):
+        logger.debug(f'Making card record in collection in database')
+        cur.execute('INSERT OR IGNORE INTO Cards (card_value_1, , card_value_2, collection_id) VALUES (?, ?, ?)',
+                    (card_value_1, card_value_2, collection_id,))
 
-cursor.executemany('''
-    INSERT OR IGNORE INTO groups (user_id, name) VALUES (?, ?)
-''', [(1, 'Group1'), (2, 'Group2')])
+    @staticmethod
+    @connect
+    def get_collections_by_telegram_id(cur, telegram_id: int):
+        """Get a tuple of collections for a given telegram_id"""
+        logger.debug(f'Getting collections for telegram_id: {telegram_id}')
+        cur.execute('''
+            SELECT c.collection_name, c.collection_id
+            FROM Collections c
+            JOIN Users u ON c.user_id = u.user_id
+            WHERE u.telegram_id = ?
+        ''', (telegram_id,))
+        return cur.fetchall()
 
-cursor.executemany('''
-    INSERT OR IGNORE INTO sets (user_id, group_id, name) VALUES (?, ?, ?)
-''', [
-    (1, 1, 'Set1'),
-    (1, 1, 'Set2'),
-    (1, 2, 'Set3'),
-    (2, 2, 'Set4'),
-])
-
-cursor.executemany('''
-    INSERT OR IGNORE INTO cards (set_id, word, translation) VALUES (?, ?, ?)
-''', [
-    (1, 'Word1', 'Translation1'),
-    (1, 'Word2', 'Translation2'),
-    (2, 'Word3', 'Translation3'),
-    (3, 'Word4', 'Translation4'),
-    (4, 'Word5', 'Translation5'),
-])
-
-# Сохраняем изменения
-conn.commit()
-
-# Закрываем соединение
-conn.close()
+    @staticmethod
+    @connect
+    def get_cards_by_collection_id(cur, collection_id: int):
+        """Get values of cards for a given collection_id"""
+        logger.debug(f'Getting cards for collection_id: {collection_id}')
+        cur.execute('''
+            SELECT c.card_value_1, c.card_value_2
+            FROM Cards c
+            WHERE c.collection_id = ?
+        ''', (collection_id,))
+        return cur.fetchall()
