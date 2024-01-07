@@ -20,22 +20,8 @@ from bot_set.bot_states import BotStates
 education_cmd_router = Router()
 
 
-@education_cmd_router.message(F.text.lower() == "начать обучение")
+@education_cmd_router.message(F.text.lower() == "Учиться 🧑‍🏫")
 async def education_cmd(message: Message, state: FSMContext) -> None:
     await state.set_state(BotStates.teaching)
-    pass
-
-
-@education_cmd_router.callback_query(F.data == "Знаю", StateFilter(BotStates.teaching))
-async def i_know_callback(callback_data: CallbackQuery) -> None:
-    pass
-
-
-@education_cmd_router.callback_query(F.data == "Не знаю", StateFilter(BotStates.teaching))
-async def i_dont_know_callback(callback_data: CallbackQuery) -> None:
-    pass
-
-
-@education_cmd_router.callback_query(F.data == "развернуть", StateFilter(BotStates.teaching))
-async def flip_cart_callback(callback_data: CallbackQuery) -> None:
+    # TODO: вернуть пагинацией список карточек к изучению
     pass
