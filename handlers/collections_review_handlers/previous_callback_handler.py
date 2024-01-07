@@ -9,6 +9,7 @@ from .collection_review_router import collections_review_router
 from bot_set.bot_states import BotStates
 
 
-@collections_review_router.callback_query(F.data == "<<Предыдущая", StateFilter(BotStates.collections_review))
+@collections_review_router.callback_query(F.data == "<<предыдущая", StateFilter(BotStates.collections_review))
 async def previous_collection_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+    await callback_data.answer(text="Предыдущая 🟢")
     pass

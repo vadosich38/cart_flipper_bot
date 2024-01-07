@@ -13,15 +13,18 @@ class BotStates(StatesGroup):
     collection_adding - режим создания новой коллекции
 
     РАБОТА С ПАРАМИ
-    paar_adding - режим добавления новой пары
-    paar_editing - режим редактирвоания пары
+    pair_adding - режим добавления новой пары
+    pair_editing - режим редактирвоания пары
     """
 
     teaching = State()
     collections_review = State()
 
-    collection_adding = State()
+    collection_adding_get_name = State()
+    collection_adding_get_active_mode = State()
+    collection_adding_get_fill_decision = State()
+
     collection_editing = State()
 
-    paar_adding = State()
-    paar_editing = State()
+    pair_adding = State()
+    pair_editing = State()
