@@ -36,7 +36,6 @@ async def main() -> None:
             print("При поллинге бота возникла ошибка,", error_obj)
         finally:
             pass
-            #TODO: сделать коммит и закрытие БД
 
 
 if __name__ == "__main__":
