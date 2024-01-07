@@ -1,3 +1,3 @@
 from aiogram import Dispatcher
 
-bot_dp = Dispatcher()
+cart_flipper_dp = Dispatcher()
