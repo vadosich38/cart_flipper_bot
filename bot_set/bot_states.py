@@ -16,6 +16,7 @@ class BotStates(StatesGroup):
     pair_adding - режим добавления новой пары
     pair_editing - режим редактирвоания пары
     """
+    main_menu = State()
 
     teaching = State()
     collections_review = State()
