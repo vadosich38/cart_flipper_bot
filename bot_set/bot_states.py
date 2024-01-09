@@ -26,5 +26,11 @@ class BotStates(StatesGroup):
 
     collection_editing = State()
 
-    pair_adding = State()
-    pair_editing = State()
+    get_first_elem_new_pair_adding = State()
+    get_second_elem_new_pair_adding = State()
+    set_mirror_mode_new_pair_adding = State()
+
+    pair_editing_change_first_elem = State()
+    pair_editing_change_second_elem = State()
+
+

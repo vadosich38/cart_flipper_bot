@@ -20,7 +20,8 @@ from .collection_edit_router import collection_edit_router
                                        StateFilter(BotStates.collection_editing))
 async def edit_pair_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     #TODO: вызывает сценарий pair_edit_handlers
-    # присылает первый элемент редактируемой карточки и приглашает ее изменить
+    # присылает первый элемент редактируемой карточки и приглашает ее изменить, прикреплена инлайн клавиатура с кнопкой 'оставить без изменений'
+    # также нужно прислать обычную клавиатуру с кнопкой отмены реждактирования пары
     await callback_data.answer(text="Редактировать пару 🟢")
-    await state.set_state(BotStates.pair_editing)
+    await state.set_state(BotStates.pair_editing_change_first_elem)
     pass

@@ -2,16 +2,27 @@
 # Пользователь получает сообщение: “Второй элемент пары: …,
 # пришлите на что его изменить или нажмите кнопку “Оставить без изменений”.
 
-from .edit_paar_router import edit_paar_router
+from .edit_pair_router import edit_pair_router
+from bot_set.bot_states import BotStates
 
 from aiogram import F
+from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
+from aiogram.filters import StateFilter
 
 
-@edit_paar_router.message()
-async def get_first_elem():
+@edit_pair_router.message(StateFilter(BotStates.pair_editing_change_first_elem))
+async def get_first_elem(message: Message, state: FSMContext) -> None:
+    #TODO: пересохраняет первый элемент
+    await message.answer(text="Первый элемент успешно изменен! 🟩")
+    await state.set_state(BotStates.pair_editing_change_second_elem)
+    #TODO: присылает второй элемент и предлагает его изменить
     pass
 
 
-@edit_paar_router.message(F.text("Оставить без изменений"))
-async def first_elem_leave_unchanged():
+@edit_pair_router.message(F.text.lower("оставить без изменений"), StateFilter(BotStates.pair_editing_change_second_elem))
+async def first_elem_leave_unchanged(message: Message, state: FSMContext) -> None:
+    await message.answer(text="Первый элемент остается без изменений! 🟩")
+    await state.set_state(BotStates.pair_editing_change_second_elem)
+    #TODO: присылает второй элемент и предлагает его изменить прикрепленной клавитаруой с кнопкой 'оставить без изменений'
     pass
