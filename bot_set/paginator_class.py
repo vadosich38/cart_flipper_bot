@@ -2,6 +2,7 @@ from DBPackage.DBclass import DBMethods
 
 
 class Paginator:
+    #TODO: пропиши доку плз (какой метод для чего применяется, типизация данных
     def __init__(self, telegram_id):
         # Getting card values if card has no attribute "learned"
         self.card_values = [i for i in DBMethods.get_active_collection_cards(telegram_id) if i[2] == 0]

@@ -4,6 +4,7 @@ import pickle
 
 
 class DBMethods:
+    #TODO: пропиши плз доку где ее нет и типизацию данных
     DATABASE_NAME = 'main.db'
 
     @staticmethod

@@ -3,7 +3,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.keyboard import InlineKeyboardMarkup
 
 
-def cards_paginator_kb(current_page: int, total_pages: int, checked=False) -> InlineKeyboardMarkup:
+def get_cards_paginator_ikb(current_page: int, total_pages: int, checked=False) -> InlineKeyboardMarkup:
+    #TODO: пагинатор должен листать элементы по кругу как вертушка
     builder = InlineKeyboardBuilder()
     if not checked:
         builder.row(InlineKeyboardButton(text='Show_value', callback_data='paginator_show_value'))
@@ -21,6 +22,8 @@ def cards_paginator_kb(current_page: int, total_pages: int, checked=False) -> In
     return builder.as_markup(resize_keyboard=True)
 
 
-def exit_kb():
+#TODO: для чего эта функция?
+# можно ее заменить на cancel_kb в папке клавиатур?
+def get_exit_ikb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Back to menu',
                                                                        callback_data='paginator_menu')]])
