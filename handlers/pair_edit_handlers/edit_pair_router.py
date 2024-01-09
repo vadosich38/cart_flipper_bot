@@ -2,4 +2,4 @@
 
 from aiogram import Router
 
-edit_paar_router = Router()
+edit_pair_router = Router()

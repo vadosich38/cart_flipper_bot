@@ -11,12 +11,15 @@ from bot_set.bot_states import BotStates
 from bot_set.bot_object import cart_flipper_bot
 from bot_set.texts import bot_texts
 from keyboards.main_menu_kb import get_main_kb
+from bot_set.bot_object import cart_flipper_bot
 
 
 @collection_add_router.callback_query(F.data == "yes", StateFilter(BotStates.collection_adding_get_fill_decision))
 async def collection_filling_callback(callback_data: CallbackQuery, state: FSMContext):
-    await state.set_state(BotStates.pair_adding)
+    await state.set_state(BotStates.get_first_elem_new_pair_adding)
     await callback_data.answer(text="Добавить карточки в коллекцию 🟩")
+    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+                                        text="Пришлите первый элемент карточки 📂")
     #TODO: переход к сценарию добавления карточек
 
 
