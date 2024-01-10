@@ -7,8 +7,9 @@ from keyboards.paginator_ikb import get_cards_paginator_ikb as pag_ikb
 from keyboards.back_to_main_menu import get_return_in_main_menu_kb as return_to_main_rkb
 from bot_set.routers import education_cmd_router
 
+
 @education_cmd_router.callback_query(F.data == 'paginator_show', StateFilter(BotStates.teaching))
-async def process_paginator_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+async def paginator_show(callback_data: CallbackQuery, state: FSMContext) -> None:
     """
     Callback handler for showing the current card second value.
     Args:
@@ -23,7 +24,7 @@ async def process_paginator_callback(callback_data: CallbackQuery, state: FSMCon
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_not_learned', StateFilter(BotStates.teaching))
-async def process_paginator_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+async def paginator_not_learned(callback_data: CallbackQuery, state: FSMContext) -> None:
     """
     Callback handler for 'not learned' event.
     Args:
@@ -38,7 +39,7 @@ async def process_paginator_callback(callback_data: CallbackQuery, state: FSMCon
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_learned', StateFilter(BotStates.teaching))
-async def process_paginator_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+async def paginator_learned(callback_data: CallbackQuery, state: FSMContext) -> None:
     """
     Callback handler for marking the current card as learned and proceed to next.
     Args:
@@ -59,7 +60,7 @@ async def process_paginator_callback(callback_data: CallbackQuery, state: FSMCon
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_exit', StateFilter(BotStates.teaching))
-async def process_paginator_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+async def paginator_exit(callback_data: CallbackQuery, state: FSMContext) -> None:
     """
     Callback handler for exiting the learning mode. Clear FSM cache and changes state to main_menu.
     Args:
