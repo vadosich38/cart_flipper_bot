@@ -58,7 +58,6 @@ class DBMethods:
                 card_id INTEGER PRIMARY KEY,
                 card_value_1 TEXT NOT NULL,
                 card_value_2 TEXT NOT NULL,
-                status BOOL NOT NULL,
                 collection_id INTEGER,
                 FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
             )
@@ -113,8 +112,8 @@ class DBMethods:
         """
         logger.debug(f'Making card record in collection in database')
         cur.execute('INSERT OR IGNORE INTO Cards (card_value_1, card_value_2, '
-                    'status, collection_id) VALUES (?, ?, ?, ?)',
-                    (card_value_1, card_value_2, False, collection_id,))
+                    'status, collection_id) VALUES (?, ?, ?)',
+                    (card_value_1, card_value_2, collection_id,))
 
     @staticmethod
     @connect
@@ -165,19 +164,19 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_active_collection_cards(cur, telegram_id: int) -> List[Tuple[str, str, bool, int]]:
+    def get_active_collection_cards(cur, telegram_id: int) -> List[Tuple[str, str]]:
         """Get a list of card IDs from the active collection for a user.
         Args:
             cur: The SQLite cursor.
             telegram_id (int): Telegram user ID.
         Returns:
-            List of tuples containing card_value_1, card_value_2, status, and card_id.
+            List of tuples containing card_value_1, card_value_2,
         """
         logger.debug(f'Getting card IDs from the active collection for telegram_id: {telegram_id}')
 
         # Retrieve the card IDs from the active collection for the given user
         cur.execute('''
-            SELECT c.card_value_1, c.card_value_2, c.status, c.card_id
+            SELECT c.card_value_1, c.card_value_2
             FROM Cards c
             JOIN Collections col ON c.collection_id = col.collection_id
             JOIN Users u ON col.user_id = u.user_id
@@ -185,21 +184,3 @@ class DBMethods:
         ''', (telegram_id,))
         return cur.fetchall()
 
-    @staticmethod
-    @connect
-    def set_card_learned_status(cur, card_id: int) -> None:
-        """Set the learned status of a card to True by its ID.
-        Args:
-            cur: The SQLite cursor.
-            card_id (int): ID of the card.
-        Returns:
-            None
-        """
-        logger.debug(f'Setting learned status to True for card ID: {card_id}')
-
-        # Set the status to True for the specified card ID
-        cur.execute('''
-            UPDATE Cards
-            SET status = 1
-            WHERE card_id = ?
-        ''', (card_id,))

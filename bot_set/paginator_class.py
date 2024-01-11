@@ -12,8 +12,8 @@ class Paginator:
     """
     def __init__(self, telegram_id: int):
         # Getting card values if card has no attribute "learned"
-        self.card_values = [i for i in DBMethods.get_active_collection_cards(telegram_id) if i[2] == 0]
-        # Randomizing list
+        self.card_values = DBMethods.get_active_collection_cards(telegram_id)
+        self.turned_card = False
         random.shuffle(self.card_values)
 
     def start(self) -> str:
@@ -28,7 +28,11 @@ class Paginator:
         Returns:
             str: The value of the next card.
         """
+        # Moving card to the end of list.
         self.card_values.append(self.card_values.pop(0))
+        # Set turned status to False
+        self.turned_card = False
+        # Returns first card value
         return self.card_values[0][0]
 
     def show(self) -> str:
@@ -36,13 +40,18 @@ class Paginator:
         Returns:
             str: Second value associated with the current card.
         """
-        return self.card_values[0][1]
+        # Returns second
+        if self.turned_card:
+            self.turned_card = False
+            return self.card_values[0][0]
+        else:
+            self.turned_card = True
+            return self.card_values[0][1]
 
     def set_learned(self) -> str or None:
-        """Setting learned status for card in DB."""
-        # Setting learned status for card
-        DBMethods.set_card_learned_status(self.card_values[0][3])
+        """Setting learned status for card."""
         # Deleting card from local list
         del self.card_values[0]
+        self.turned_card = False
         # Getting value from the next card of return None
         return self.card_values[0][0] if self.card_values[0][0] else None

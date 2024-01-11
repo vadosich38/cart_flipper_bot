@@ -20,7 +20,7 @@ async def paginator_show(callback_data: CallbackQuery, state: FSMContext) -> Non
     """
     data = await state.get_data()
     pag_inst = data['paginator_instance']
-    await callback_data.answer(pag_inst.show(), reply_markup=pag_ikb(True))
+    await callback_data.answer(pag_inst.show(), reply_markup=pag_ikb())
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_not_learned', StateFilter(BotStates.teaching))
