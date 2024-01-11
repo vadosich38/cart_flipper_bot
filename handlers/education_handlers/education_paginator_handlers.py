@@ -54,7 +54,7 @@ async def paginator_learned(callback_data: CallbackQuery, state: FSMContext) -> 
     if value:
         await callback_data.answer(value, reply_markup=pag_ikb())
     else:
-        await state.set_data({})
+        await state.clear()
         await callback_data.answer('All cards is learned', reply_markup=return_to_main_rkb())
         await state.set_state(BotStates.main_menu)
 
@@ -69,5 +69,6 @@ async def paginator_exit(callback_data: CallbackQuery, state: FSMContext) -> Non
     Returns:
         None
     """
-    await state.set_data({})
+    await callback_data.answer(text="Закончить обучение 🟢")
+    await state.clear()
     await state.set_state(BotStates.main_menu)

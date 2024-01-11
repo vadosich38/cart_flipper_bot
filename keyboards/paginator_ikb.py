@@ -14,8 +14,3 @@ def get_cards_paginator_ikb() -> InlineKeyboardMarkup:
     builder.row(*nav_buttons)
     builder.row(InlineKeyboardButton(text=bot_texts['paginator_menu'], callback_data='paginator_menu'))
     return builder.as_markup(resize_keyboard=True)
-
-
-def get_exit_ikb() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=bot_texts['paginator_menu'],
-                                                                       callback_data='paginator_menu')]])

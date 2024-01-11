@@ -27,7 +27,7 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
         await message.answer(value, reply_markup=pag_ikb())
         await state.set_data({'paginator_instance': pag_inst})
     else:
-        await state.set_data({})
+        await state.clear()
         await message.answer('Empty Collection', reply_markup=return_to_main_rkb())
         await state.set_state(BotStates.main_menu)
 
