@@ -37,6 +37,7 @@ class DBMethods:
         Returns:
             None
         """
+        #TODO: можно создать три таблицы одним запросом через execute_script?
         logger.debug('Creating database tables')
         cur.execute('''
             CREATE TABLE IF NOT EXISTS Users (
@@ -125,6 +126,8 @@ class DBMethods:
         Returns:
             List of tuples containing collection_name and collection_id.
         """
+        #TODO: также нужно возврщать количество карточек в коллекции, статус коллекции: активна или нет
+        # List[Tuple(name: str, id: int, status: int/str/bool, cards_count: int]
         logger.debug(f'Getting collections for telegram_id: {telegram_id}')
         cur.execute('''
             SELECT c.collection_name, c.collection_id
@@ -184,3 +187,5 @@ class DBMethods:
         ''', (telegram_id,))
         return cur.fetchall()
 
+#TODO: нужен метод получения карточек по айди коллекции -- на вход айди коллекции, на выход тапл карточек (с данными)
+# также, как и получение карточек всех активных коллекций, но только по конкретной коллекции вне зависимости от ее статуса активности

@@ -1,20 +1,28 @@
 from DBPackage.DBclass import DBMethods
 from typing import List, Tuple
 import random
+from typing import Union
 
 
-class Paginator:
+class CardsPaginator:
     """Paginator class for handling card navigation.
     Args:
         telegram_id (int): Telegram user ID.
     Attributes:
         card_values (List[Tuple[str, str, bool, int]]): List of card values from the active collection.
     """
-    def __init__(self, telegram_id: int):
+    def __init__(self, telegram_id: int, mode: str = "active", collection_id: Union[int, None] = None):
+        #TODO: некорректный коммент?
         # Getting card values if card has no attribute "learned"
-        self.card_values = DBMethods.get_active_collection_cards(telegram_id)
-        self.turned_card = False
-        random.shuffle(self.card_values)
+        if mode == "active":
+            self.card_values = DBMethods.get_active_collection_cards(telegram_id=telegram_id)
+            self.turned_card = False
+            random.shuffle(self.card_values)
+        elif mode == "specific":
+            # не удаляй тудушку, пож!
+            #TODO: здесь будет использоваться метод БД для получения карточек конкретной коллекции
+            # self.card_values = DBMethods...
+            self.turned_card = False
 
     def start(self) -> str:
         """Get the value of the current card.
