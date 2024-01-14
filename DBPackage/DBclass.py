@@ -149,17 +149,31 @@ class DBMethods:
         """
         logger.debug(f'Setting active status for collection for telegram_id: {telegram_id}')
 
-        # Reset status for other collections of the same user
-        cur.execute('''
-            UPDATE Collections
-            SET status = 0
-            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
-        ''', (telegram_id,))
-
         # Set the status to True for the specified collection ID
         cur.execute('''
             UPDATE Collections
             SET status = 1
+            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
+            AND collection_id = ?
+        ''', (telegram_id, collection_id))
+
+    @staticmethod
+    @connect
+    def set_collection_inactive_by_telegram_id(cur, telegram_id: int, collection_id: int) -> None:
+        """Set status to inactive for a collection and reset status for other collections of the same user.
+        Args:
+            cur: The SQLite cursor.
+            telegram_id (int): Telegram user ID.
+            collection_id (int): ID of the collection.
+        Returns:
+            None
+        """
+        logger.debug(f'Setting inactive status for collection for telegram_id: {telegram_id}')
+
+        # Set the status to False for the specified collection ID
+        cur.execute('''
+            UPDATE Collections
+            SET status = 0
             WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
             AND collection_id = ?
         ''', (telegram_id, collection_id))
