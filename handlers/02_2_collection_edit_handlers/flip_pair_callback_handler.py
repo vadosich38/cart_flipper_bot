@@ -10,7 +10,7 @@ from .collection_edit_router import collection_edit_router
 
 
 #TODO: заполнить фильтр
-@collection_edit_router.callback_query(F.data == "",
+@collection_edit_router.callback_query(F.data == "flipp_cart",
                                        StateFilter(BotStates.collection_editing))
 async def flip_pair_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     #TODO присылает разворот карточки

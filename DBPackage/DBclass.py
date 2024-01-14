@@ -4,6 +4,8 @@ from typing import List, Tuple
 import pickle
 
 
+#TODO: нужен метод удаления карточки из коллекции
+#TODO: нужен метод получения данных карточки по айди пользователя, айди коллекции и айди карточки
 class DBMethods:
     DATABASE_NAME = 'main.db'
 
@@ -63,6 +65,14 @@ class DBMethods:
 
     @staticmethod
     @connect
+    def get_collection_id_by_collection_name_and_telegram_id(cur, collection_name: str, telegram_id: int) -> int:
+        #TODO: добавить логер
+        # метод должен возвращать collection_id искомую по telegram_id и collection_name
+        cur.execute('')
+        return 1
+
+    @staticmethod
+    @connect
     def add_user(cur, telegram_id: int) -> None:
         """Add user record to the database
         Args:
@@ -98,7 +108,10 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def add_card_by_collection_id(cur, collection_id: int, card_value_1: str, card_value_2: str) -> None:
+    def add_card_by_collection_id(cur, collection_id: int, card_value_1: str, value1_type: str,
+                                  card_value_2: str, value2_type: str) -> None:
+        #TODO: к каждому значению карточки должен соответствовать тип данных: фото, текст, аудио, видео
+        # тип данных должен записываться в таблицу рядом с значением карточки
         """Add card record to the collection in the database.
         Args:
             cur: The SQLite cursor.
@@ -138,7 +151,8 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def set_collection_active_by_telegram_id(cur, telegram_id: int, collection_id: int) -> None:
+    def set_collection_active_by_collection_id(cur, collection_id: int) -> None:
+        #TODO: упростить метод до проверки только по collection_id
         """Set status for a collection and reset status for other collections of the same user.
         Args:
             cur: The SQLite cursor.
@@ -159,7 +173,8 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def set_collection_inactive_by_telegram_id(cur, telegram_id: int, collection_id: int) -> None:
+    def set_collection_inactive_by_collection_id(cur, collection_id: int) -> None:
+        #TODO: упростить метод до проверки только по collection_id
         """Set status to inactive for a collection and reset status for other collections of the same user.
         Args:
             cur: The SQLite cursor.
@@ -180,7 +195,9 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_active_collection_cards(cur, telegram_id: int) -> List[Tuple[str, str]]:
+    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str]]:
+        #TODO: метод get_active_collections_cards и метод get_cards_by_collection_id должны иметь одиновые выходные данные
+        # в том числе и тип данных значения карточки
         """Get a list of card IDs from the active collection for a user.
         Args:
             cur: The SQLite cursor.
@@ -212,6 +229,8 @@ class DBMethods:
         """
 
         logger.debug(f'Getting cards for collection_id: {collection_id}')
+        #TODO: у каждого card_value должен быть тип данных: фото, текст, аудио, видео
+        # нужно его возвращать также в этом же кортеже
         cur.execute('''
             SELECT card_id, card_value_1, card_value_2
             FROM Cards
@@ -220,21 +239,22 @@ class DBMethods:
 
         return cur.fetchall()
 
-    @staticmethod
-    @connect
-    def get_active_collections(cur) -> List[Tuple[str, int]]:
-        """Get a tuple of active collections (name and id).
-        Args:
-            cur: The SQLite cursor.
-        Returns:
-            List of tuples containing collection_name and collection_id for all active collections.
-        """
-
-        logger.debug('Getting active collections')
-        cur.execute('''
-            SELECT collection_name, collection_id
-            FROM Collections
-            WHERE status = 1
-        ''')
-
-        return cur.fetchall()
+    #TODO: этот метод не нужен, удалить
+    # @staticmethod
+    # @connect
+    # def get_active_collections(cur) -> List[Tuple[str, int]]:
+    #     """Get a tuple of active collections (name and id).
+    #     Args:
+    #         cur: The SQLite cursor.
+    #     Returns:
+    #         List of tuples containing collection_name and collection_id for all active collections.
+    #     """
+    #
+    #     logger.debug('Getting active collections')
+    #     cur.execute('''
+    #         SELECT collection_name, collection_id
+    #         FROM Collections
+    #         WHERE status = 1
+    #     ''')
+    #
+    #     return cur.fetchall()
