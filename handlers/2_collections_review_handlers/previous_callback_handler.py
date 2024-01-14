@@ -11,7 +11,7 @@ from bot_set.bot_object import cart_flipper_bot
 from keyboards.collections_paginator_ikb import get_collections_paginator_ikb
 
 
-@collections_review_router.callback_query(F.data == "<<предыдущая", StateFilter(BotStates.collections_review))
+@collections_review_router.callback_query(F.data == "previous", StateFilter(BotStates.collections_review))
 async def previous_collection_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     await callback_data.answer(text="Предыдущая 🟢")
 
