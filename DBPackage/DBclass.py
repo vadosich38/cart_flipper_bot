@@ -37,31 +37,28 @@ class DBMethods:
         Returns:
             None
         """
-        #TODO: можно создать три таблицы одним запросом через execute_script?
         logger.debug('Creating database tables')
         cur.execute('''
             CREATE TABLE IF NOT EXISTS Users (
                 user_id INTEGER PRIMARY KEY,
                 telegram_id INTEGER NOT NULL
-            )
-        ''')
-        cur.execute('''
+            );
+
             CREATE TABLE IF NOT EXISTS Collections (
                 collection_id INTEGER PRIMARY KEY,
                 collection_name TEXT NOT NULL,
                 status BOOL NOT NULL,
                 user_id INTEGER,
                 FOREIGN KEY (user_id) REFERENCES Users(user_id)
-            )
-        ''')
-        cur.execute('''
+            );
+
             CREATE TABLE IF NOT EXISTS Cards (
                 card_id INTEGER PRIMARY KEY,
                 card_value_1 TEXT NOT NULL,
                 card_value_2 TEXT NOT NULL,
                 collection_id INTEGER,
                 FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
-            )
+            );
         ''')
 
     @staticmethod
@@ -118,23 +115,25 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_collections_by_telegram_id(cur, telegram_id: int) -> List[Tuple[str, int]]:
+    def get_collections_by_telegram_id(cur, telegram_id: int) -> List[Tuple[str, int, bool, int]]:
         """Get a tuple of collections for a given telegram_id.
         Args:
             cur: The SQLite cursor.
             telegram_id (int): Telegram user ID.
         Returns:
-            List of tuples containing collection_name and collection_id.
+            List of tuples containing collection_name, collection_id, status, and cards_count.
         """
-        #TODO: также нужно возврщать количество карточек в коллекции, статус коллекции: активна или нет
-        # List[Tuple(name: str, id: int, status: int/str/bool, cards_count: int]
+
         logger.debug(f'Getting collections for telegram_id: {telegram_id}')
         cur.execute('''
-            SELECT c.collection_name, c.collection_id
+            SELECT c.collection_name, c.collection_id, c.status, COUNT(card_id) AS cards_count
             FROM Collections c
             JOIN Users u ON c.user_id = u.user_id
+            LEFT JOIN Cards card ON card.collection_id = c.collection_id
             WHERE u.telegram_id = ?
+            GROUP BY c.collection_name, c.collection_id, c.status
         ''', (telegram_id,))
+
         return cur.fetchall()
 
     @staticmethod
@@ -150,17 +149,31 @@ class DBMethods:
         """
         logger.debug(f'Setting active status for collection for telegram_id: {telegram_id}')
 
-        # Reset status for other collections of the same user
-        cur.execute('''
-            UPDATE Collections
-            SET status = 0
-            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
-        ''', (telegram_id,))
-
         # Set the status to True for the specified collection ID
         cur.execute('''
             UPDATE Collections
             SET status = 1
+            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
+            AND collection_id = ?
+        ''', (telegram_id, collection_id))
+
+    @staticmethod
+    @connect
+    def set_collection_inactive_by_telegram_id(cur, telegram_id: int, collection_id: int) -> None:
+        """Set status to inactive for a collection and reset status for other collections of the same user.
+        Args:
+            cur: The SQLite cursor.
+            telegram_id (int): Telegram user ID.
+            collection_id (int): ID of the collection.
+        Returns:
+            None
+        """
+        logger.debug(f'Setting inactive status for collection for telegram_id: {telegram_id}')
+
+        # Set the status to False for the specified collection ID
+        cur.execute('''
+            UPDATE Collections
+            SET status = 0
             WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
             AND collection_id = ?
         ''', (telegram_id, collection_id))
@@ -187,5 +200,41 @@ class DBMethods:
         ''', (telegram_id,))
         return cur.fetchall()
 
-#TODO: нужен метод получения карточек по айди коллекции -- на вход айди коллекции, на выход тапл карточек (с данными)
-# также, как и получение карточек всех активных коллекций, но только по конкретной коллекции вне зависимости от ее статуса активности
+    @staticmethod
+    @connect
+    def get_cards_by_collection_id(cur, collection_id: int) -> List[Tuple[int, str, str]]:
+        """Get a tuple of cards for a given collection_id.
+        Args:
+            cur: The SQLite cursor.
+            collection_id (int): Collection ID.
+        Returns:
+            List of tuples containing card_id, card_value_1, and card_value_2.
+        """
+
+        logger.debug(f'Getting cards for collection_id: {collection_id}')
+        cur.execute('''
+            SELECT card_id, card_value_1, card_value_2
+            FROM Cards
+            WHERE collection_id = ?
+        ''', (collection_id,))
+
+        return cur.fetchall()
+
+    @staticmethod
+    @connect
+    def get_active_collections(cur) -> List[Tuple[str, int]]:
+        """Get a tuple of active collections (name and id).
+        Args:
+            cur: The SQLite cursor.
+        Returns:
+            List of tuples containing collection_name and collection_id for all active collections.
+        """
+
+        logger.debug('Getting active collections')
+        cur.execute('''
+            SELECT collection_name, collection_id
+            FROM Collections
+            WHERE status = 1
+        ''')
+
+        return cur.fetchall()
