@@ -206,4 +206,21 @@ class DBMethods:
 
         return cur.fetchall()
 
-# TODO: также, как и получение карточек всех активных коллекций, но только по конкретной коллекции вне зависимости от ее статуса активности
+    @staticmethod
+    @connect
+    def get_active_collections(cur) -> List[Tuple[str, int]]:
+        """Get a tuple of active collections (name and id).
+        Args:
+            cur: The SQLite cursor.
+        Returns:
+            List of tuples containing collection_name and collection_id for all active collections.
+        """
+
+        logger.debug('Getting active collections')
+        cur.execute('''
+            SELECT collection_name, collection_id
+            FROM Collections
+            WHERE status = 1
+        ''')
+
+        return cur.fetchall()
