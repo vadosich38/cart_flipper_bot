@@ -32,5 +32,5 @@ async def edit_collection_callback(callback_data: CallbackQuery, state: FSMConte
     # + ikb с кнопками функциональности работы с редактированием коллекции
     await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=spec_coll_pag_inst.start(),
-                                        reply_markup=get_collection_edit_menu_ikb())
+                                        reply_markup=get_collection_edit_menu_ikb(collection_id=cur_coll_id))
     await state.set_data({"spec_coll_pag_inst": spec_coll_pag_inst, "cur_coll_id": cur_coll_id})

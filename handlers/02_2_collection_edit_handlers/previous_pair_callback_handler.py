@@ -17,5 +17,5 @@ async def previous_pair_callback(callback_data: CallbackQuery, state: FSMContext
     data = await state.get_data()
     await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=data["spec_coll_pag_inst"].previous(),
-                                        reply_markup=get_collection_edit_menu_ikb())
+                                        reply_markup=get_collection_edit_menu_ikb(collection_id=data["cur_coll_id"]))
 

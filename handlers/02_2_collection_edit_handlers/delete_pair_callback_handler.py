@@ -26,7 +26,7 @@ async def paar_delete_callback(callback_data: CallbackQuery, state: FSMContext) 
     # Возвращает новый список карточек колекции пагинацией
     await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=spec_coll_pag_inst.start(),
-                                        reply_markup=get_collection_edit_menu_ikb())
+                                        reply_markup=get_collection_edit_menu_ikb(collection_id=data["cur_coll_id"]))
 
     # Обновляет в памяти экземпляр класса
     await state.update_data({"spec_coll_pag_inst": spec_coll_pag_inst})

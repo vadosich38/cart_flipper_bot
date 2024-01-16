@@ -14,8 +14,7 @@ from DBPackage.DBclass import DBMethods
 from bot_set.bot_object import cart_flipper_bot
 
 
-#TODO: callback_data взять из клавиатуры collection_edit_paginator_ikb
-@collection_edit_router.callback_query(F.data == "", StateFilter(BotStates.collection_editing))
+@collection_edit_router.callback_query(F.data == "activate", StateFilter(BotStates.collection_editing))
 async def collection_activate_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     collection_id = data["cur_coll_id"]
@@ -30,8 +29,7 @@ async def collection_activate_callback(callback_data: CallbackQuery, state: FSMC
     await state.set_state(BotStates.main_menu)
 
 
-@collection_edit_router.message(F.text.lower() == "деактивировать коллекцию 🟥",
-                                StateFilter(BotStates.collection_editing))
+@collection_edit_router.message(F.data == "deactivate", StateFilter(BotStates.collection_editing))
 async def collection_deactivate_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     collection_id = data["cur_coll_id"]

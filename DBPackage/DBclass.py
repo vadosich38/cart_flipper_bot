@@ -4,7 +4,6 @@ from typing import List, Tuple
 import pickle
 
 
-#TODO: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна, False если не активна
 class DBMethods:
     DATABASE_NAME = 'main.db'
 
@@ -303,3 +302,15 @@ class DBMethods:
         else:
             logger.warning(f'Card not found with card_id: {card_id}')
             return None
+
+    # TODO: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна, False если не активна
+    @staticmethod
+    @connect
+    def is_collection_active(cur, collection_id: int) -> bool:
+        #получить статус коллекции по ее айди
+        collection_status = cur.execute("")
+
+        if collection_status == 0:
+            return False
+
+        return True
