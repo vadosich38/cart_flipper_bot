@@ -278,17 +278,28 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_card_by_id(cur, card_id: int) -> tuple[str, str, str, str]:
-        """Delete a card by its card_id.
+    def get_card_by_id(cur, card_id: int) -> Tuple[int, str, str, str, str, int] or None:
+        """Get a card by its card_id.
         Args:
             cur: The SQLite cursor.
-            card_id (int): ID of the card to be deleted.
+            card_id (int): ID of the card to be retrieved.
         Returns:
-            tuple[str, str, str, str]
+            Tuple containing card_id, card_value_1, value1_type, card_value_2, value2_type, collection_id.
         """
         logger.debug(f'Getting card with card_id: {card_id}')
 
-        # Getting the card with the specified card_id
-        cur.execute('SELECT FROM Cards WHERE card_id = ?', (card_id,))
+        # Retrieve the card with the specified card_id
+        cur.execute('''
+            SELECT card_id, card_value_1, value1_type, card_value_2, value2_type, collection_id
+            FROM Cards
+            WHERE card_id = ?
+        ''', (card_id,))
 
-        return cur.fetchone()
+        result = cur.fetchone()
+
+        if result:
+            logger.debug(f'Found card with card_id: {card_id}')
+            return result
+        else:
+            logger.warning(f'Card not found with card_id: {card_id}')
+            return None
