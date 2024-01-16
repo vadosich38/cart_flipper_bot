@@ -4,7 +4,6 @@ from typing import List, Tuple
 import pickle
 
 
-#TODO: нужен метод удаления карточки из коллекции
 #TODO: нужен метод получения данных карточки по айди пользователя, айди коллекции и айди карточки
 class DBMethods:
     DATABASE_NAME = 'main.db'
@@ -66,10 +65,35 @@ class DBMethods:
     @staticmethod
     @connect
     def get_collection_id_by_collection_name_and_telegram_id(cur, collection_name: str, telegram_id: int) -> int:
-        #TODO: добавить логер
-        # метод должен возвращать collection_id искомую по telegram_id и collection_name
-        cur.execute('')
-        return 1
+        """Get the collection_id for a given collection_name and telegram_id.
+        Args:
+            cur: The SQLite cursor.
+            collection_name (str): Collection name.
+            telegram_id (int): Telegram user ID.
+        Returns:
+            int: The collection_id if found, otherwise 0.
+        """
+        logger.debug(f'Getting collection_id for collection_name: {collection_name} and telegram_id: {telegram_id}')
+
+        # Fetch the collection_id based on collection_name and telegram_id
+        cur.execute('''
+            SELECT collection_id
+            FROM Collections col
+            JOIN Users u ON col.user_id = u.user_id
+            WHERE col.collection_name = ? AND u.telegram_id = ?
+        ''', (collection_name, telegram_id))
+
+        result = cur.fetchone()
+
+        if result:
+            collection_id = result[0]
+            logger.debug(
+                f'Found collection_id: {collection_id} for collection_name: {collection_name} and telegram_id: {telegram_id}')
+            return collection_id
+        else:
+            logger.warning(
+                f'Collection not found for collection_name: {collection_name} and telegram_id: {telegram_id}')
+            return 0
 
     @staticmethod
     @connect
@@ -110,21 +134,23 @@ class DBMethods:
     @connect
     def add_card_by_collection_id(cur, collection_id: int, card_value_1: str, value1_type: str,
                                   card_value_2: str, value2_type: str) -> None:
-        #TODO: к каждому значению карточки должен соответствовать тип данных: фото, текст, аудио, видео
-        # тип данных должен записываться в таблицу рядом с значением карточки
         """Add card record to the collection in the database.
         Args:
             cur: The SQLite cursor.
             collection_id (int): ID of the collection.
             card_value_1 (str): Value 1 of the card.
+            value1_type (str): Type of value 1 (photo, text, audio, video, etc.).
             card_value_2 (str): Value 2 of the card.
+            value2_type (str): Type of value 2 (photo, text, audio, video, etc.).
         Returns:
             None
         """
         logger.debug(f'Making card record in collection in database')
-        cur.execute('INSERT OR IGNORE INTO Cards (card_value_1, card_value_2, '
-                    'status, collection_id) VALUES (?, ?, ?)',
-                    (card_value_1, card_value_2, collection_id,))
+        cur.execute(
+            """INSERT OR IGNORE INTO Cards (card_value_1, value1_type, card_value_2, value2_type, status, 
+            collection_id) VALUES (?, ?, ?, ?, ?),
+            """,
+            (card_value_1, value1_type, card_value_2, value2_type, collection_id,))
 
     @staticmethod
     @connect
@@ -152,109 +178,99 @@ class DBMethods:
     @staticmethod
     @connect
     def set_collection_active_by_collection_id(cur, collection_id: int) -> None:
-        #TODO: упростить метод до проверки только по collection_id
         """Set status for a collection and reset status for other collections of the same user.
         Args:
             cur: The SQLite cursor.
-            telegram_id (int): Telegram user ID.
+
             collection_id (int): ID of the collection.
         Returns:
             None
         """
-        logger.debug(f'Setting active status for collection for telegram_id: {telegram_id}')
+        logger.debug(f'Setting active status for collection.')
 
         # Set the status to True for the specified collection ID
         cur.execute('''
             UPDATE Collections
             SET status = 1
-            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
-            AND collection_id = ?
-        ''', (telegram_id, collection_id))
+            WHERE collection_id = ?
+        ''', (collection_id,))
 
     @staticmethod
     @connect
     def set_collection_inactive_by_collection_id(cur, collection_id: int) -> None:
-        #TODO: упростить метод до проверки только по collection_id
         """Set status to inactive for a collection and reset status for other collections of the same user.
         Args:
             cur: The SQLite cursor.
-            telegram_id (int): Telegram user ID.
             collection_id (int): ID of the collection.
         Returns:
             None
         """
-        logger.debug(f'Setting inactive status for collection for telegram_id: {telegram_id}')
+        logger.debug(f'Setting inactive status for collection.')
 
         # Set the status to False for the specified collection ID
         cur.execute('''
             UPDATE Collections
             SET status = 0
-            WHERE user_id = (SELECT user_id FROM Users WHERE telegram_id = ?)
-            AND collection_id = ?
-        ''', (telegram_id, collection_id))
+            WHERE collection_id = ?
+        ''', (collection_id, ))
+
+    from typing import List, Tuple
 
     @staticmethod
     @connect
-    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str]]:
-        #TODO: метод get_active_collections_cards и метод get_cards_by_collection_id должны иметь одиновые выходные данные
-        # в том числе и тип данных значения карточки
-        """Get a list of card IDs from the active collection for a user.
+    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str, str, str]]:
+        """Get a list of card values from the active collection for a user.
         Args:
             cur: The SQLite cursor.
             telegram_id (int): Telegram user ID.
         Returns:
-            List of tuples containing card_value_1, card_value_2,
+            List of tuples containing card_value_1, value1_type, card_value_2, value2_type.
         """
-        logger.debug(f'Getting card IDs from the active collection for telegram_id: {telegram_id}')
+        logger.debug(f'Getting card values from the active collection for telegram_id: {telegram_id}')
 
-        # Retrieve the card IDs from the active collection for the given user
+        # Retrieve the card values from the active collection for the given user
         cur.execute('''
-            SELECT c.card_value_1, c.card_value_2
+            SELECT c.card_value_1, c.value1_type, c.card_value_2, c.value2_type
             FROM Cards c
             JOIN Collections col ON c.collection_id = col.collection_id
             JOIN Users u ON col.user_id = u.user_id
             WHERE u.telegram_id = ? AND col.status = 1
         ''', (telegram_id,))
+
         return cur.fetchall()
 
     @staticmethod
     @connect
-    def get_cards_by_collection_id(cur, collection_id: int) -> List[Tuple[int, str, str]]:
+    def get_cards_by_collection_id(cur, collection_id: int) -> List[Tuple[int, str, str, str, str]]:
         """Get a tuple of cards for a given collection_id.
         Args:
             cur: The SQLite cursor.
             collection_id (int): Collection ID.
         Returns:
-            List of tuples containing card_id, card_value_1, and card_value_2.
+            List of tuples containing card_id, card_value_1, value1_type, card_value_2, value2_type.
         """
 
         logger.debug(f'Getting cards for collection_id: {collection_id}')
-        #TODO: у каждого card_value должен быть тип данных: фото, текст, аудио, видео
-        # нужно его возвращать также в этом же кортеже
+
         cur.execute('''
-            SELECT card_id, card_value_1, card_value_2
+            SELECT card_id, card_value_1, value1_type, card_value_2, value2_type
             FROM Cards
             WHERE collection_id = ?
         ''', (collection_id,))
 
         return cur.fetchall()
 
-    #TODO: этот метод не нужен, удалить
-    # @staticmethod
-    # @connect
-    # def get_active_collections(cur) -> List[Tuple[str, int]]:
-    #     """Get a tuple of active collections (name and id).
-    #     Args:
-    #         cur: The SQLite cursor.
-    #     Returns:
-    #         List of tuples containing collection_name and collection_id for all active collections.
-    #     """
-    #
-    #     logger.debug('Getting active collections')
-    #     cur.execute('''
-    #         SELECT collection_name, collection_id
-    #         FROM Collections
-    #         WHERE status = 1
-    #     ''')
-    #
-    #     return cur.fetchall()
+    @staticmethod
+    @connect
+    def delete_card_by_id(cur, card_id: int) -> None:
+        """Delete a card by its card_id.
+        Args:
+            cur: The SQLite cursor.
+            card_id (int): ID of the card to be deleted.
+        Returns:
+            None
+        """
+        logger.debug(f'Deleting card with card_id: {card_id}')
+
+        # Delete the card with the specified card_id
+        cur.execute('DELETE FROM Cards WHERE card_id = ?', (card_id,))
