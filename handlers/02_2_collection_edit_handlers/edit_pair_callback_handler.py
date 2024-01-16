@@ -25,7 +25,7 @@ async def edit_pair_callback(callback_data: CallbackQuery, state: FSMContext) ->
     await callback_data.answer(text="Редактировать пару 🟢")
     data = await state.get_data()
     cur_coll_id = data["cur_coll_id"]
-    cur_card_id = data["spec_cards_pag_inst"].cur_card_id
+    cur_card_id = data["spec_coll_pag_inst"].cur_card_id
 
     # cur_card
     # await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,

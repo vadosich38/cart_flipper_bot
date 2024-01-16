@@ -4,7 +4,7 @@ from typing import List, Tuple
 import pickle
 
 
-#TODO: нужен метод получения данных карточки по айди пользователя, айди коллекции и айди карточки
+#TODO: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна, False если не активна
 class DBMethods:
     DATABASE_NAME = 'main.db'
 
@@ -219,6 +219,7 @@ class DBMethods:
     @staticmethod
     @connect
     def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str, str, str]]:
+    #TODO: добавить в выдачу id карточки List[Tuple[int, str, str, str, str]]
         """Get a list of card values from the active collection for a user.
         Args:
             cur: The SQLite cursor.

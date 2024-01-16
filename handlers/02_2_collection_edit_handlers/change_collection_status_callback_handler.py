@@ -1,4 +1,4 @@
-#TODO: Кнопка “Активировать/деактивировать коллекцию” изменяет статус активности выбранной коллекции.
+# Кнопка “Активировать/деактивировать коллекцию” изменяет статус активности выбранной коллекции.
 
 from aiogram import F
 from aiogram.types import CallbackQuery
@@ -15,8 +15,7 @@ from bot_set.bot_object import cart_flipper_bot
 
 
 #TODO: callback_data взять из клавиатуры collection_edit_paginator_ikb
-@collection_edit_router.callback_query(F.data == "",
-                                StateFilter(BotStates.collection_editing))
+@collection_edit_router.callback_query(F.data == "", StateFilter(BotStates.collection_editing))
 async def collection_activate_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     collection_id = data["cur_coll_id"]

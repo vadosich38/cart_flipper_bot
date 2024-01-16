@@ -5,6 +5,7 @@ from typing import Union
 
 
 class CardsPaginator:
+    #TODO: изменить класс с учетом изсенений метода БД get_active_collections_cards
     """Paginator class for handling card navigation.
     Args:
         telegram_id (int): Telegram user ID.
