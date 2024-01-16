@@ -4,7 +4,7 @@ from typing import List, Tuple
 import pickle
 
 
-#TODO: нужен метод получения данных карточки по айди пользователя, айди коллекции и айди карточки
+#TODO: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна, False если не активна
 class DBMethods:
     DATABASE_NAME = 'main.db'
 
@@ -219,6 +219,7 @@ class DBMethods:
     @staticmethod
     @connect
     def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str, str, str]]:
+    #TODO: добавить в выдачу id карточки List[Tuple[int, str, str, str, str]]
         """Get a list of card values from the active collection for a user.
         Args:
             cur: The SQLite cursor.
@@ -274,3 +275,20 @@ class DBMethods:
 
         # Delete the card with the specified card_id
         cur.execute('DELETE FROM Cards WHERE card_id = ?', (card_id,))
+
+    @staticmethod
+    @connect
+    def get_card_by_id(cur, card_id: int) -> tuple[str, str, str, str]:
+        """Delete a card by its card_id.
+        Args:
+            cur: The SQLite cursor.
+            card_id (int): ID of the card to be deleted.
+        Returns:
+            tuple[str, str, str, str]
+        """
+        logger.debug(f'Getting card with card_id: {card_id}')
+
+        # Getting the card with the specified card_id
+        cur.execute('SELECT FROM Cards WHERE card_id = ?', (card_id,))
+
+        return cur.fetchone()
