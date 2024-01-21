@@ -15,6 +15,7 @@ class DBMethods:
         Returns:
             The wrapped function.
         """
+
         def wrapper(*args, **kwargs):
             try:
                 connection = sqlite3.connect(DBMethods.DATABASE_NAME)
@@ -26,6 +27,7 @@ class DBMethods:
                 return result
             except Exception as exc:
                 logger.error(f'Error connecting database: {exc}')
+
         return wrapper
 
     @staticmethod
@@ -211,26 +213,26 @@ class DBMethods:
             UPDATE Collections
             SET status = 0
             WHERE collection_id = ?
-        ''', (collection_id, ))
+        ''', (collection_id,))
 
     from typing import List, Tuple
 
     @staticmethod
     @connect
-    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[str, str, str, str]]:
-    #TODO: добавить в выдачу id карточки List[Tuple[int, str, str, str, str]]
+    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[int, str, str, str, str]]:
+        # DONE: добавить в выдачу id карточки List[Tuple[int, str, str, str, str]]
         """Get a list of card values from the active collection for a user.
         Args:
             cur: The SQLite cursor.
             telegram_id (int): Telegram user ID.
         Returns:
-            List of tuples containing card_value_1, value1_type, card_value_2, value2_type.
+            List of tuples containing card_id, card_value_1, value1_type, card_value_2, value2_type.
         """
         logger.debug(f'Getting card values from the active collection for telegram_id: {telegram_id}')
 
         # Retrieve the card values from the active collection for the given user
         cur.execute('''
-            SELECT c.card_value_1, c.value1_type, c.card_value_2, c.value2_type
+            SELECT с.card_id, c.card_value_1, c.value1_type, c.card_value_2, c.value2_type
             FROM Cards c
             JOIN Collections col ON c.collection_id = col.collection_id
             JOIN Users u ON col.user_id = u.user_id
@@ -303,12 +305,27 @@ class DBMethods:
             logger.warning(f'Card not found with card_id: {card_id}')
             return None
 
-    # TODO: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна, False если не активна
+    # DONE: нужен метод, принимающий айди коллекции и возвращающий bool, True если коллекция активна,
+    # False если не активна
     @staticmethod
     @connect
     def is_collection_active(cur, collection_id: int) -> bool:
-        #получить статус коллекции по ее айди
-        collection_status = cur.execute("")
+        """
+        Get collection status by collection_id
+        Args:
+            cur: The SQLite cursor.
+            collection_id(int): ID if the collection.
+        Returns:
+                Bool
+        """
+        cur.execute('''
+            SELECT status
+            FROM Collections col
+            JOIN Users u ON col.user_id = u.user_id
+            WHERE col.collection_id = ? 
+        ''', (collection_id,))
+
+        collection_status = int(cur.fetchone()[0])
 
         if collection_status == 0:
             return False
