@@ -16,6 +16,7 @@ from bot_set.bot_states import BotStates
 from .collection_edit_router import collection_edit_router
 from bot_set.bot_object import card_flipper_bot
 from keyboards.pair_edit_keyboard import get_pair_edit_kb
+from bot_set.data_formats_handler_class import send_card_element
 
 
 @collection_edit_router.callback_query(F.data == "edit_pair",
@@ -29,8 +30,9 @@ async def edit_pair_callback(callback_data: CallbackQuery, state: FSMContext) ->
     cur_card_id = data["spec_coll_pag_inst"].cur_card_id
     cur_card = DBMethods.get_card_by_id(card_id=cur_card_id)
 
-    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
-                                        text=cur_card[1],
-                                        reply_markup=get_pair_edit_kb())
+    send_card_element(user_id=callback_data.from_user.id,
+                      card_value=cur_card[1],
+                      card_value_type=cur_card[2],
+                      keyboard=get_pair_edit_kb())
 
     await state.set_state(BotStates.pair_editing_change_first_elem)

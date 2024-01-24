@@ -38,3 +38,6 @@ class DataFormatsHandler:
         await card_flipper_bot.send_video(chat_id=user_id,
                                           video=video_id,
                                           reply_markup=keyboard)
+
+
+send_card_element = DataFormatsHandler()
