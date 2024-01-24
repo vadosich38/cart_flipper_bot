@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from .collection_add_router import collection_add_router
 from bot_set.bot_states import BotStates
-from bot_set.bot_object import cart_flipper_bot
+from bot_set.bot_object import card_flipper_bot
 from keyboards.yes_no_ikb import get_yes_no_ikb
 from DBPackage.DBclass import DBMethods
 
@@ -23,7 +23,7 @@ async def collection_activate_callback(callback_data: CallbackQuery, state: FSMC
 
     DBMethods.set_collection_active_by_collection_id(collection_id=collection_id)
     await callback_data.answer(text="Коллекция активирована! 🟢")
-    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text="Коллекция активна 🟩\n\n"
                                              "Хотите ее наполнить карточками? 📂",
                                         reply_markup=get_yes_no_ikb())
@@ -42,7 +42,7 @@ async def collection_deactivate_callback(callback_data: CallbackQuery, state: FS
     DBMethods.set_collection_inactive_by_collection_id(collection_id=collection_id)
 
     await callback_data.answer(text="Коллекция не активна! 🔴")
-    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text="Коллекция остается не активированной 🟥\n\n"
                                              "Хотите ее наполнить карточками? 📂",
                                         reply_markup=get_yes_no_ikb())

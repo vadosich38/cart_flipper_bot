@@ -7,7 +7,7 @@ from aiogram import F
 
 from bot_set.bot_states import BotStates
 from .collection_edit_router import collection_edit_router
-from bot_set.bot_object import cart_flipper_bot
+from bot_set.bot_object import card_flipper_bot
 from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
 
 
@@ -15,6 +15,6 @@ from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
 async def next_pair_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     await callback_data.answer(text="Следующая карточка ➡️")
     data = await state.get_data()
-    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=data["spec_coll_pag_inst"].next(),
                                         reply_markup=get_collection_edit_menu_ikb(collection_id=data["cur_coll_id"]))

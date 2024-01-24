@@ -1,4 +1,4 @@
-#TODO: Принимается первый элмент или остается без изменений.
+# Принимается первый элмент или остается без изменений.
 # Пользователь получает сообщение: “Второй элемент пары: …,
 # пришлите на что его изменить или нажмите кнопку “Оставить без изменений”.
 
@@ -11,7 +11,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
 
-@edit_pair_router.message(StateFilter(BotStates.pair_editing_change_first_elem))
+@edit_pair_router.message(F.text, StateFilter(BotStates.pair_editing_change_first_elem))
 async def get_first_elem(message: Message, state: FSMContext) -> None:
     #TODO: пересохраняет первый элемент
     await message.answer(text="Первый элемент успешно изменен! 🟩")
@@ -20,7 +20,7 @@ async def get_first_elem(message: Message, state: FSMContext) -> None:
     pass
 
 
-@edit_pair_router.message(F.text.lower("оставить без изменений"), StateFilter(BotStates.pair_editing_change_second_elem))
+@edit_pair_router.message(F.data == "оставить без изменений", StateFilter(BotStates.pair_editing_change_first_elem))
 async def first_elem_leave_unchanged(message: Message, state: FSMContext) -> None:
     await message.answer(text="Первый элемент остается без изменений! 🟩")
     await state.set_state(BotStates.pair_editing_change_second_elem)

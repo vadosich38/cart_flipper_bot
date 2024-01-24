@@ -1,7 +1,6 @@
 import sqlite3
 from loader import logger
 from typing import List, Tuple
-import pickle
 
 
 class DBMethods:

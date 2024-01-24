@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from .collection_edit_router import collection_edit_router
 from bot_set.bot_states import BotStates
 from DBPackage.DBclass import DBMethods
-from bot_set.bot_object import cart_flipper_bot
+from bot_set.bot_object import card_flipper_bot
 from bot_set.spec_coll_cards_paginator import SpecCollCardsPaginator
 from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
 
@@ -24,7 +24,7 @@ async def paar_delete_callback(callback_data: CallbackQuery, state: FSMContext) 
     spec_coll_pag_inst = SpecCollCardsPaginator(collection_id=data["cur_coll_id"])
 
     # Возвращает новый список карточек колекции пагинацией
-    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=spec_coll_pag_inst.start(),
                                         reply_markup=get_collection_edit_menu_ikb(collection_id=data["cur_coll_id"]))
 

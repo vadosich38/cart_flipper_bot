@@ -11,7 +11,7 @@ from aiogram.filters import StateFilter
 
 from .collection_review_router import collections_review_router
 from bot_set.bot_states import BotStates
-from bot_set.bot_object import cart_flipper_bot
+from bot_set.bot_object import card_flipper_bot
 from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
 from bot_set.spec_coll_cards_paginator import SpecCollCardsPaginator
 
@@ -30,7 +30,7 @@ async def edit_collection_callback(callback_data: CallbackQuery, state: FSMConte
 
     #возвращаем пагинацией список карточек из выбранной коллекции
     # + ikb с кнопками функциональности работы с редактированием коллекции
-    await cart_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=spec_coll_pag_inst.start(),
                                         reply_markup=get_collection_edit_menu_ikb(collection_id=cur_coll_id))
     await state.set_data({"spec_coll_pag_inst": spec_coll_pag_inst, "cur_coll_id": cur_coll_id})
