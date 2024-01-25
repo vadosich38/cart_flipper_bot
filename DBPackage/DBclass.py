@@ -333,9 +333,36 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def edit_card(cur, card_id: int, card_value: Union[str, int], card_value_type: str, elem_numm: int) -> None:
-        pass
-        #TODO: нужен метод, который будет принимать новые элементы карточки и перезаписывать их при редактировании карточки.
+    def edit_card(cur, card_id: int, card_value: Union[str, int], card_value_type: str, elem_num: int) -> None:
+        #DONE: нужен метод, который будет принимать новые элементы карточки и перезаписывать их при редактировании карточки.
         # принимает параметр card_id и производит поиск карточки по этому параметру
         # принимает card_value, card_value_type и elem_numm номер стороны карточки - 1 (будет elem1) или 2 (elem2).
         # затем записывает изменения в карточке
+        """Edit a card by updating its values.
+        Args:
+            cur: The SQLite cursor.
+            card_id (int): ID of the card to be edited.
+            card_value (Union[str, int]): New value for the card.
+            card_value_type (str): Type of the card value (photo, text, audio, video, etc.).
+            elem_num (int): Element number (1 or 2) to indicate which side of the card to edit.
+        Returns:
+            None
+        """
+        logger.debug(f'Editing card with card_id: {card_id}')
+
+        # Determine which card_value and card_value_type to update based on elem_num
+        if elem_num == 1:
+            update_column = 'card_value_1'
+            update_type_column = 'value1_type'
+        elif elem_num == 2:
+            update_column = 'card_value_2'
+            update_type_column = 'value2_type'
+        else:
+            raise ValueError("elem_num should be 1 or 2.")
+
+        # Update the specified values in the card
+        cur.execute(f'''
+            UPDATE Cards
+            SET {update_column} = ?, {update_type_column} = ?
+            WHERE card_id = ?
+        ''', (card_value, card_value_type, card_id,))
