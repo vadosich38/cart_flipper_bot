@@ -4,7 +4,7 @@ Main bot code
 import logging
 from aiogram import Bot
 import asyncio
-
+from  DBPackage.DBclass import DBMethods
 from main_modes.start_cmd import start_router
 from main_modes.education_cmd import education_cmd_router
 from main_modes.collections_cmd import collections_cmd_router
@@ -15,6 +15,8 @@ from bot_set.bot_object import card_flipper_bot
 
 async def on_startup(bot: Bot) -> None:
     print("Выполняется код непосредственно перед поллингом бота")
+    # Create DB\Tables if not
+    DBMethods.create_tables()
 
 
 async def main() -> None:

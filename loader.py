@@ -1,8 +1,7 @@
 import logging
-from DBPackage.DBclass import DBMethods
 
-# Create DB\Tables if not
-DBMethods.create_tables()
+
+
 
 # Initialize system logger
 logger = logging.getLogger('SYSTEM')
