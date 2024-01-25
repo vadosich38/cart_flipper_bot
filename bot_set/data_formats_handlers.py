@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 from bot_set.bot_object import card_flipper_bot
 from aiogram.types import ReplyKeyboardMarkup, Message
 from DBPackage.DBclass import DBMethods
@@ -41,7 +41,7 @@ class DataFormatsHandlerToSendMessage:
                                           reply_markup=keyboard)
 
 
-def data_formats_handler_to_write(message: Message, card_id: int, elem_numm: int) -> None:
+def data_formats_handler_to_edit(message: Message, card_id: int, elem_numm: int) -> None:
     # https://docs.aiogram.dev/en/latest/api/enums/content_type.html
     if message.content_type == "text":
         DBMethods.edit_card(card_id=card_id,
@@ -63,6 +63,23 @@ def data_formats_handler_to_write(message: Message, card_id: int, elem_numm: int
                             card_value=message.video.file_id,
                             card_value_type="video",
                             elem_numm=elem_numm)
+
+
+def data_formats_handler_to_write(message: Message) -> dict[Union[str, int], str]:
+    # https://docs.aiogram.dev/en/latest/api/enums/content_type.html
+    #TODO: не уверен, что корректно получаю тип данных!!! проверить при тесте
+    if message.content_type == "text":
+        elem_to_write = {"value": message.text, "value_type": "text"}
+    elif message.content_type == "photo":
+        elem_to_write = {"value": message.photo[-1].file_id, "value_type": "photo"}
+    elif message.content_type == "audio":
+        elem_to_write = {"value": message.audio.file_id, "value_type": "audio"}
+    elif message.content_type == "video":
+        elem_to_write = {"value": message.video.file_id, "value_type": "video"}
+    else:
+        elem_to_write = {"value": message.text, "value_type": "unknown"}
+
+    return elem_to_write
 
 
 send_card_element = DataFormatsHandlerToSendMessage()
