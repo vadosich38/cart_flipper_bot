@@ -1,6 +1,6 @@
 import sqlite3
 from loader import logger
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 
 class DBMethods:
@@ -330,3 +330,12 @@ class DBMethods:
             return False
 
         return True
+
+    @staticmethod
+    @connect
+    def edit_card(cur, card_id: int, card_value: Union[str, int], card_value_type: str, elem_numm: int) -> None:
+        pass
+        #TODO: нужен метод, который будет принимать новые элементы карточки и перезаписывать их при редактировании карточки.
+        # принимает параметр card_id и производит поиск карточки по этому параметру
+        # принимает card_value, card_value_type и elem_numm номер стороны карточки - 1 (будет elem1) или 2 (elem2).
+        # затем записывает изменения в карточке
