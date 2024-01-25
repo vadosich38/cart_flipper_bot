@@ -1,9 +1,10 @@
 from typing import Union
 from bot_set.bot_object import card_flipper_bot
-from aiogram.types import ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, Message
+from DBPackage.DBclass import DBMethods
 
 
-class DataFormatsHandler:
+class DataFormatsHandlerToSendMessage:
     def __call__(self, user_id: int, card_value: Union[str, int], card_value_type: str,
                  keyboard: Union[ReplyKeyboardMarkup, None] = None):
         if card_value_type == "text":
@@ -40,4 +41,28 @@ class DataFormatsHandler:
                                           reply_markup=keyboard)
 
 
-send_card_element = DataFormatsHandler()
+def data_formats_handler_to_write(message: Message, card_id: int, elem_numm: int) -> None:
+    # https://docs.aiogram.dev/en/latest/api/enums/content_type.html
+    if message.content_type == "text":
+        DBMethods.edit_card(card_id=card_id,
+                            card_value=message.text,
+                            card_value_type="text",
+                            elem_numm=elem_numm)
+    elif message.content_type == "photo":
+        DBMethods.edit_card(card_id=card_id,
+                            card_value=message.photo[-1].file_id,
+                            card_value_type="photo",
+                            elem_numm=elem_numm)
+    elif message.content_type == "audio":
+        DBMethods.edit_card(card_id=card_id,
+                            card_value=message.audio.file_id,
+                            card_value_type="audio",
+                            elem_numm=elem_numm)
+    elif message.content_type == "video":
+        DBMethods.edit_card(card_id=card_id,
+                            card_value=message.video.file_id,
+                            card_value_type="video",
+                            elem_numm=elem_numm)
+
+
+send_card_element = DataFormatsHandlerToSendMessage()
