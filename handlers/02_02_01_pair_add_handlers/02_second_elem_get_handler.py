@@ -1,8 +1,8 @@
-#TODO: Пользователь получает сообщение: “Пришлите второй элемент пары”. Пользователь присылает. Данные записываются.
+#Пользователь получает сообщение: “Пришлите второй элемент пары”. Пользователь присылает. Данные записываются.
 from .pair_add_router import pair_add_router
 from bot_set.bot_states import BotStates
 from keyboards.yes_no_ikb import get_yes_no_ikb
-from keyboards.cancel_kb import get_cancel_kb
+from bot_set.data_formats_handlers import data_formats_handler_to_write
 
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
@@ -11,9 +11,10 @@ from aiogram.types import Message
 
 @pair_add_router.message(StateFilter(BotStates.get_second_elem_new_pair_adding))
 async def get_second_elem(message: Message, state: FSMContext) -> None:
-    # TODO: не уверен, что корректно получаю тип данных!!! проверить при тесте
-    value_type = message.content_type
-    await state.update_data({"second_elem_value": message.text, "second_elem_type": value_type})
+    formatted_data = data_formats_handler_to_write(message=message)
+
+    await state.update_data({"second_elem_value": formatted_data["value"],
+                             "second_elem_type": formatted_data["value_type"]})
 
     await state.set_state(BotStates.set_mirror_mode_new_pair_adding)
     await message.answer(text="Эта карточка имеет зеркальное значение? 👁‍🗨\nЗеркальное значение значит, "

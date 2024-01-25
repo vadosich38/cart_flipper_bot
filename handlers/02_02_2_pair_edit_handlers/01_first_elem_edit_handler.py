@@ -4,7 +4,7 @@
 
 from .edit_pair_router import edit_pair_router
 from bot_set.bot_states import BotStates
-from bot_set.data_formats_handlers import data_formats_handler_to_write
+from bot_set.data_formats_handlers import data_formats_handler_to_edit
 from DBPackage.DBclass import DBMethods
 from bot_set.data_formats_handlers import send_card_element
 from keyboards.pair_edit_keyboard import get_pair_edit_kb
@@ -23,7 +23,7 @@ async def get_first_elem(message: Message, state: FSMContext) -> None:
 
     #пересохраняет первый элемент
     #здесь использован метод форматирования данных для записи в БД
-    data_formats_handler_to_write(message=message, card_id=cur_card_id, elem_numm=1)
+    data_formats_handler_to_edit(message=message, card_id=cur_card_id, elem_numm=1)
     await message.answer(text="Первый элемент успешно изменен! 🟩\nХотите изменить второй элемент карточки?")
 
     await state.set_state(BotStates.pair_editing_change_second_elem)

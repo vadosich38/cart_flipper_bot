@@ -4,7 +4,7 @@
 # меняет состояние бота FSM: collection_editing.
 from .edit_pair_router import edit_pair_router
 from bot_set.bot_states import BotStates
-from bot_set.data_formats_handlers import data_formats_handler_to_write
+from bot_set.data_formats_handlers import data_formats_handler_to_edit
 from bot_set.spec_coll_cards_paginator import SpecCollCardsPaginator
 from bot_set.bot_object import card_flipper_bot
 from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
@@ -22,7 +22,7 @@ async def get_second_elem(message: Message, state: FSMContext) -> None:
 
     # пересохраняет второй элемент
     # здесь использован метод форматирования данных для записи в БД
-    data_formats_handler_to_write(message=message, card_id=cur_card_id, elem_numm=2)
+    data_formats_handler_to_edit(message=message, card_id=cur_card_id, elem_numm=2)
     await message.answer(text="Второй элемент успешно изменен! Ваша карточка обновлена! 🟩")
 
     await state.set_state(BotStates.collection_editing)
