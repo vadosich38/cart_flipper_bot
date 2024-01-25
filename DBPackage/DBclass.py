@@ -218,8 +218,8 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_active_collections_cards(cur, telegram_id: int) -> List[Tuple[int, str, str, str, str]]:
-        # DONE: добавить в выдачу id карточки List[Tuple[int, str, str, str, str]]
+    def get_active_collections_cards(cur, telegram_id: int) \
+            -> List[Tuple[int, Union[str, int], str, Union[str, int], str]]:
         """Get a list of card values from the active collection for a user.
         Args:
             cur: The SQLite cursor.

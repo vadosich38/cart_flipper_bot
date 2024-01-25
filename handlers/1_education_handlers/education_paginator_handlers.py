@@ -2,10 +2,12 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import F
 from aiogram.filters import StateFilter
+
 from bot_set.bot_states import BotStates
 from keyboards.cards_paginator_ikb import get_cards_paginator_ikb as pag_ikb
 from keyboards.back_to_main_menu import get_return_in_main_menu_kb as return_to_main_rkb
 from bot_set.routers import education_cmd_router
+from bot_set.data_formats_handlers import send_card_element
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_show', StateFilter(BotStates.teaching))
@@ -20,7 +22,12 @@ async def paginator_card_show(callback_data: CallbackQuery, state: FSMContext) -
     """
     data = await state.get_data()
     cards_pag_inst = data['paginator_instance']
-    await callback_data.answer(cards_pag_inst.show(), reply_markup=pag_ikb())
+    card_value = cards_pag_inst.show()
+
+    send_card_element(user_id=callback_data.from_user.id,
+                      card_value=card_value[0],
+                      card_value_type=card_value[1],
+                      keyboard=pag_ikb())
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_not_learned', StateFilter(BotStates.teaching))
@@ -35,7 +42,12 @@ async def paginator_card_not_learned(callback_data: CallbackQuery, state: FSMCon
     """
     data = await state.get_data()
     cards_pag_inst = data['paginator_instance']
-    await callback_data.answer(cards_pag_inst.not_learned, reply_markup=pag_ikb())
+    card_value = cards_pag_inst.not_learned
+
+    send_card_element(user_id=callback_data.from_user.id,
+                      card_value=card_value[0],
+                      card_value_type=card_value[1],
+                      keyboard=pag_ikb())
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_learned', StateFilter(BotStates.teaching))
@@ -50,12 +62,16 @@ async def paginator_card_learned(callback_data: CallbackQuery, state: FSMContext
     """
     data = await state.get_data()
     cards_pag_inst = data['paginator_instance']
-    value = cards_pag_inst.set_learned()
-    if value:
-        await callback_data.answer(value, reply_markup=pag_ikb())
+    card_value = cards_pag_inst.set_learned()
+
+    if card_value:
+        send_card_element(user_id=callback_data.from_user.id,
+                          card_value=card_value[0],
+                          card_value_type=card_value[1],
+                          keyboard=pag_ikb())
     else:
         await state.clear()
-        await callback_data.answer('All cards is learned', reply_markup=return_to_main_rkb())
+        await callback_data.answer('Все карточки изучены! Вы молодец 🏆', reply_markup=return_to_main_rkb())
         await state.set_state(BotStates.main_menu)
 
 

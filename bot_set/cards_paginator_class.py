@@ -19,14 +19,14 @@ class CardsPaginator:
         self.turned_card = False
         random.shuffle(self.card_values)
 
-    def start(self) -> str:
+    def start(self) -> tuple[Union[str, int], str]:
         """Get the value of the current card.
         Returns:
             str: The value of the current card.
         """
-        return self.card_values[0][0]
+        return self.card_values[0][1], self.card_values[0][2]
 
-    def not_learned(self) -> str:
+    def not_learned(self) -> tuple[Union[str, int], str]:
         """Moving card to the end of the list, proceed to next card
         Returns:
             str: The value of the next card.
@@ -37,9 +37,9 @@ class CardsPaginator:
         self.turned_card = False
 
         # Returns first card value
-        return self.card_values[0][0]
+        return self.card_values[0][1], self.card_values[0][2]
 
-    def show(self) -> str:
+    def show(self) -> tuple[Union[str, int], str]:
         """Get second value associated with the current card.
         Returns:
             str: Second value associated with the current card.
@@ -47,16 +47,16 @@ class CardsPaginator:
         # Returns second
         if self.turned_card:
             self.turned_card = False
-            return self.card_values[0][0]
+            return self.card_values[0][1], self.card_values[0][2]
         else:
             self.turned_card = True
-            return self.card_values[0][1]
+            return self.card_values[0][3], self.card_values[0][4]
 
-    def set_learned(self) -> str or None:
+    def set_learned(self) -> tuple[Union[str, int], str] or None:
         """Setting learned status for card."""
         # Deleting card from local list
         del self.card_values[0]
         self.turned_card = False
 
         # Getting value from the next card of return None
-        return self.card_values[0][0] if self.card_values[0][0] else None
+        return self.card_values[0][1], self.card_values[0][2] if self.card_values[0][1] else None
