@@ -52,7 +52,7 @@ from bot_handlers.pair_edit_handlers222.first_elem_edit_handler1 import get_firs
 from bot_handlers.pair_edit_handlers222.second_elem_edit_handler2 import get_second_elem, second_elem_leave_unchanged
 
 
-from bot_set.dispatcher_object import cart_flipper_dp
+from bot_set.dispatcher_object import card_flipper_dp
 from bot_set.bot_object import card_flipper_bot
 
 
@@ -64,11 +64,11 @@ async def on_startup(bot: Bot) -> None:
 
 async def main() -> None:
     #зарегистрировать он стартап
-    cart_flipper_dp.startup.register(on_startup)
+    card_flipper_dp.startup.register(on_startup)
     #зарегистрировать мидлвари
 
     #привзать роутеры в диспетчер
-    cart_flipper_dp.include_routers(start_router, education_cmd_router, collections_cmd_router,
+    card_flipper_dp.include_routers(start_router, education_cmd_router, collections_cmd_router,
                                     collections_review_router, collection_add_router, collection_edit_router,
                                     pair_add_router, edit_pair_router)
 
@@ -78,7 +78,7 @@ async def main() -> None:
 
         try:
             #поллинг
-            await cart_flipper_dp.start_polling(bots=card_flipper_bot)
+            await card_flipper_dp.start_polling(card_flipper_bot)
         except Exception as error_obj:
             print("При поллинге бота возникла ошибка,", error_obj)
         finally:
