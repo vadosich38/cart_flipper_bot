@@ -75,8 +75,8 @@ async def paginator_card_learned(callback_data: CallbackQuery, state: FSMContext
         await state.set_state(BotStates.main_menu)
 
 
-#TODO: здесь правльно указана callback data в фильтре? в клавиатуре другая стоит
-@education_cmd_router.callback_query(F.data == 'paginator_exit', StateFilter(BotStates.teaching))
+#TODO: здесь правльно указана callback data в фильтре?
+@education_cmd_router.callback_query(F.data == 'paginator_menu', StateFilter(BotStates.teaching))
 async def learning_exit(callback_data: CallbackQuery, state: FSMContext) -> None:
     """
     Callback handler for exiting the learning mode. Clear FSM cache and changes state to main_menu.

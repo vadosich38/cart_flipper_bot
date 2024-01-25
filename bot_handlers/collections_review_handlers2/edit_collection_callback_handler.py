@@ -1,4 +1,4 @@
-#TODO: колбек кнопки "редактировать" запускает сценарий 02_2_collection_edit_handlers
+# колбек кнопки "редактировать" запускает сценарий collection_edit_handlers22
 # Состояние бота меняется FSM: collection_editing
 # Пользователь получает кнопки “Добавить новую пару” и “Активировать/деактивировать коллекцию”
 # Пользователь получает сообщение с элементами (парами) коллекции, реализовано пагинацией:
@@ -18,7 +18,7 @@ from bot_set.spec_coll_cards_paginator import SpecCollCardsPaginator
 
 @collections_review_router.callback_query(F.data == "collection_edit", StateFilter(BotStates.collections_review))
 async def edit_collection_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
-    #вызывает сценарий 02_2_collection_edit_handlers
+    #вызывает сценарий collection_edit_handlers22
     await state.set_state(BotStates.collection_editing)
     await callback_data.answer(text="Редактировать коллекцию 🟩")
 

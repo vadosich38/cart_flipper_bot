@@ -1,5 +1,5 @@
 #TODO: Кнопка “Отменить” отменяет добавление новой коллекции или пары в нее, если коллекция уже создана.
-# Состояние бота меняется FSM: collection и возвращает к списку коллекций, запуская сценаарий 2_collections_review_handlers
+# Состояние бота меняется FSM: collection и возвращает к списку коллекций, запуская сценаарий collections_review_handlers2
 
 from aiogram import F
 from aiogram.types import Message

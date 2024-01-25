@@ -1,4 +1,4 @@
-#TODO: Да –– меняет состояние бота  FSM: pair_adding и вызывает сценарий 02_02_01_pair_add_handlers
+# Да –– меняет состояние бота  FSM: pair_adding и вызывает сценарий pair_add_handlers221
 # Нет –– меняет состояние бота FSM: collection и возвращает к списку коллекций.
 
 from aiogram.types import CallbackQuery

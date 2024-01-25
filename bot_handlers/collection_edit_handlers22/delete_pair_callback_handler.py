@@ -14,7 +14,7 @@ from keyboards.collection_edit_paginator_ikb import get_collection_edit_menu_ikb
 
 
 @collection_edit_router.callback_query(F.data == "delete_pair", StateFilter(BotStates.collection_editing))
-async def paar_delete_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
+async def pair_delete_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     # Удаляет карточку из коллекции
     data = await state.get_data()
     DBMethods.delete_card_by_id(card_id=data["spec_coll_pag_inst"].cur_card_id)

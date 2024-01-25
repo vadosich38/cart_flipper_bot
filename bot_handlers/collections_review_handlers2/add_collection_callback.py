@@ -1,5 +1,5 @@
-#TODO: Меняет состояние бота FSM: collection_adding
-# вызывает сценарий 02_1_collection_add_handlers
+# Меняет состояние бота FSM: collection_adding
+# вызывает сценарий collection_add_handlers21
 # Пользователь приглашается ввести имя коллекции и получает кнопку “Отменить”.
 
 from aiogram import F
