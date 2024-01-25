@@ -17,7 +17,8 @@ class CardsPaginator:
         # Getting card values if card has no attribute "learned"
         self.card_values = DBMethods.get_active_collections_cards(telegram_id=telegram_id)
         self.turned_card = False
-        random.shuffle(self.card_values)
+        if self.card_values:
+            random.shuffle(self.card_values)
 
     def start(self) -> tuple[Union[str, int], str]:
         """Get the value of the current card.

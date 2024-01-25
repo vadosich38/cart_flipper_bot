@@ -57,9 +57,11 @@ from bot_set.bot_object import card_flipper_bot
 
 
 async def on_startup(bot: Bot) -> None:
-    print("Выполняется код непосредственно перед поллингом бота")
     # Create DB\Tables if not
+    print("\nВыполняется код непосредственно перед поллингом бота")
     DBMethods.create_tables()
+    print("БД создана")
+    print("Bot is ready")
 
 
 async def main() -> None:

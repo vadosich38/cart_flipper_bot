@@ -3,10 +3,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram import F
 from aiogram.filters import StateFilter
 
+from main_modes.education_cmd import education_cmd_router
 from bot_set.bot_states import BotStates
 from keyboards.cards_paginator_ikb import get_cards_paginator_ikb as pag_ikb
 from keyboards.back_to_main_menu import get_return_in_main_menu_kb as return_to_main_rkb
-from bot_set.routers import education_cmd_router
 from bot_set.data_formats_handlers import send_card_element
 
 

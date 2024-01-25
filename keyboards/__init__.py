@@ -1,0 +1,11 @@
+from .back_to_main_menu import get_return_in_main_menu_kb
+from .cancel_kb import get_cancel_kb
+from .cards_paginator_ikb import get_cards_paginator_ikb
+from .collection_edit_paginator_ikb import get_collection_edit_menu_ikb
+from .collections_paginator_ikb import get_collections_paginator_ikb
+from .main_menu_kb import get_main_kb
+from .pair_edit_keyboard import get_pair_edit_kb
+from .yes_no_ikb import get_yes_no_ikb
+from .create_first_collection_ikb import get_button_create_first_collection
+
+print("Keyboards inited")

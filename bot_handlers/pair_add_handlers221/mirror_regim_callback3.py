@@ -33,7 +33,7 @@ async def set_mirror_mode(callback_data: CallbackQuery, state: FSMContext) -> No
                                         card_value_2=data["first_elem_value"], value2_type=data["first_elem_type"])
 
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
-                                        text="Карточка добавлена зеркально! 🟩}")
+                                        text="Карточка добавлена зеркально! 🟩")
     await state.set_state(BotStates.collections_review)
 
     coll_pag_inst = CollectionsPaginator(telegram_id=callback_data.from_user.id)
