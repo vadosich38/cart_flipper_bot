@@ -15,8 +15,6 @@ from DBPackage.DBclass import DBMethods
 
 @collection_add_router.message(F.text, F.text.len() < 25, StateFilter(BotStates.collection_adding_get_name))
 async def get_collection_name_handler(message: Message, state: FSMContext):
-    DBMethods.add_collection_by_telegram_id(telegram_id=message.from_user.id, collection_name=message.text)
-
     await message.reply(text=f"Имя вашей коллекции {message.text}\n\n"
                              f"хотите ее активировать? ☑️",
                         reply_markup=get_yes_no_ikb())

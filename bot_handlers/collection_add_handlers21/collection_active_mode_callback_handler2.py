@@ -16,12 +16,10 @@ from DBPackage.DBclass import DBMethods
 @collection_add_router.callback_query(F.data == "yes", StateFilter(BotStates.collection_adding_get_active_mode))
 async def collection_activate_callback(callback_data: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    collection_id = DBMethods.get_collection_id_by_collection_name_and_telegram_id(
-        collection_name=data["new_coll_name"],
-        telegram_id=callback_data.from_user.id)
-    await state.update_data({"new_coll_id": collection_id})
+    DBMethods.add_collection_by_telegram_id(telegram_id=callback_data.from_user.id,
+                                            collection_name=data["new_coll_name"],
+                                            coll_status=1)
 
-    DBMethods.set_collection_active_by_collection_id(collection_id=collection_id)
     await callback_data.answer(text="Коллекция активирована! 🟢")
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text="Коллекция активна 🟩\n\n"
@@ -33,13 +31,9 @@ async def collection_activate_callback(callback_data: CallbackQuery, state: FSMC
 @collection_add_router.callback_query(F.data == "no", StateFilter(BotStates.collection_adding_get_active_mode))
 async def collection_deactivate_callback(callback_data: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-
-    collection_id = DBMethods.get_collection_id_by_collection_name_and_telegram_id(
-        collection_name=data["new_coll_name"],
-        telegram_id=callback_data.from_user.id)
-    await state.update_data({"new_coll_id": collection_id})
-
-    DBMethods.set_collection_inactive_by_collection_id(collection_id=collection_id)
+    DBMethods.add_collection_by_telegram_id(telegram_id=callback_data.from_user.id,
+                                            collection_name=data["new_coll_name"],
+                                            coll_status=0)
 
     await callback_data.answer(text="Коллекция не активна! 🔴")
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,

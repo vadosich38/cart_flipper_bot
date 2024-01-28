@@ -17,6 +17,7 @@ async def previous_collection_callback(callback_data: CallbackQuery, state: FSMC
 
     data = await state.get_data()
     coll_pag_inst = data["coll_pag_inst"]
+    #TODO: изменять сооьбщение вместо отправки нового!
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=coll_pag_inst.next(),
                                         reply_markup=get_collections_paginator_ikb())

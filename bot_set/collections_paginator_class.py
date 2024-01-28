@@ -11,15 +11,13 @@ class CollectionsPaginator:
     """
     def __init__(self, telegram_id: int):
         # Getting all collections data by user
-        #TODO: метод всегда возвращает None, таблица БД пуста при открытии в браузере БД даже после добавления первой коллекции
         self.all_collections = DBMethods.get_collections_by_telegram_id(telegram_id=telegram_id)
         # Counter of the sequence number of the displayed collection
         self.collection_index = 0
-        #TODO: здесь возникает исключение, если all_collections is None
-
-        self.current_collection_id = self.all_collections[self.collection_index][1]
-        # Number of collections to display
-        self.collections_number = len(self.all_collections)
+        if self.all_collections:
+            self.current_collection_id = self.all_collections[self.collection_index][1]
+            # Number of collections to display
+            self.collections_number = len(self.all_collections)
 
     def start(self) -> str:
         """Get the current collection data.
@@ -27,7 +25,6 @@ class CollectionsPaginator:
             str: message text for the collection.
         """
         current_collection = self.all_collections[self.collection_index]
-
         return (f"{current_collection[0]}\n"
                 f"Статус: {current_collection[2]}\n"
                 f"Количество карточек в коллекции: {current_collection[3]}")

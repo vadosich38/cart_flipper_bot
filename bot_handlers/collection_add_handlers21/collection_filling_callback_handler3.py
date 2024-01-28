@@ -11,15 +11,22 @@ from bot_set.bot_states import BotStates
 from bot_set.texts import bot_texts
 from keyboards.main_menu_kb import get_main_kb
 from bot_set.bot_object import card_flipper_bot
+from DBPackage.DBclass import DBMethods
 
 
 @collection_add_router.callback_query(F.data == "yes", StateFilter(BotStates.collection_adding_get_fill_decision))
 async def collection_filling_callback(callback_data: CallbackQuery, state: FSMContext):
     await state.set_state(BotStates.get_first_elem_new_pair_adding)
+    data = await state.get_data()
+    collection_id = DBMethods.get_collection_id_by_collection_name_and_telegram_id(
+        collection_name=data["new_coll_name"],
+        telegram_id=callback_data.from_user.id)
+    await state.update_data({"new_coll_id": collection_id})
+
     await callback_data.answer(text="Добавить карточки в коллекцию 🟩")
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text="Пришлите первый элемент карточки 📂")
-    #TODO: переход к сценарию pair_add
+    # переход к сценарию pair_add
 
 
 @collection_add_router.callback_query(F.data == "no", StateFilter(BotStates.collection_adding_get_fill_decision))

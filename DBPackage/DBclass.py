@@ -63,7 +63,6 @@ class DBMethods:
                 FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
             )''')
 
-
     @staticmethod
     @connect
     def get_collection_id_by_collection_name_and_telegram_id(cur, collection_name: str, telegram_id: int) -> int:
@@ -107,28 +106,33 @@ class DBMethods:
         Returns:
             None
         """
+        #TODO: нрет проверки на существование пользователя
         logger.debug(f'Making user:{telegram_id} record in database')
         cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
 
     @staticmethod
     @connect
-    def add_collection_by_telegram_id(cur, telegram_id: int, collection_name: str) -> None:
+    def add_collection_by_telegram_id(cur, telegram_id: int, collection_name: str, coll_status: int) -> None:
         """Add collection record to the database.
         Args:
             cur: The SQLite cursor.
             telegram_id (int): Telegram user ID.
             collection_name (str): Name of the collection.
+            coll_status (int): Collection status (active/deactive)
         Returns:
             None
         """
-        logger.debug(f'Making collection record in database: {telegram_id, collection_name}')
+        logger.debug(f'Making collection record in database: {telegram_id, collection_name, coll_status}')
         # Getting user_id
         cur.execute('SELECT user_id FROM Users WHERE telegram_id = ?', (telegram_id,))
         user_id = cur.fetchone()
         # Adding collection if user exits
         if user_id:
-            cur.execute('INSERT OR IGNORE INTO Collections (collection_name, user_id) VALUES (?, ?)',
-                        (collection_name, user_id[0]))
+            #TODO: оставлять OR IGNORE?
+            cur.execute('INSERT INTO Collections (collection_name, user_id, status) VALUES (?, ?, ?)',
+                        (collection_name, user_id[0], coll_status))
+            # cur.execute('INSERT OR IGNORE INTO Collections (collection_name, user_id) VALUES (?, ?)',
+            #             (collection_name, user_id[0]))
         else:
             logger.warning(f'User with telegram_id {telegram_id} not found. Collection not added.')
 
