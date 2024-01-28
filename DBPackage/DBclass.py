@@ -119,7 +119,7 @@ class DBMethods:
         Returns:
             None
         """
-        logger.debug(f'Making collection record in database')
+        logger.debug(f'Making collection record in database: {telegram_id, collection_name}')
         # Getting user_id
         cur.execute('SELECT user_id FROM Users WHERE telegram_id = ?', (telegram_id,))
         user_id = cur.fetchone()
