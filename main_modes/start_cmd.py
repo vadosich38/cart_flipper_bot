@@ -16,7 +16,7 @@ start_router = Router()
 async def start_cmd(message: Message, state: FSMContext) -> None:
     await message.delete()
     logger.debug('Start handler executed')
-    DBMethods.add_user(message.from_user.id)
+    DBMethods.add_user(telegram_id=message.from_user.id)
     await state.set_state(BotStates.main_menu)
     await message.answer(text=bot_texts["start_text"],
                          reply_markup=get_main_kb())
