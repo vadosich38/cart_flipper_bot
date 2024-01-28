@@ -13,8 +13,9 @@ class CardsPaginator:
         card_values (List[Tuple[str, str, bool, int]]): List of card values from the active collection.
     """
     def __init__(self, telegram_id: int):
-        #TODO: некорректный коммент?
-        # Getting card values if card has no attribute "learned"
+        #DONE: некорректный коммент?
+
+        # Getting active collections cards
         self.card_values = DBMethods.get_active_collections_cards(telegram_id=telegram_id)
         self.turned_card = False
         if self.card_values:

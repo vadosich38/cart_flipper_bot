@@ -16,6 +16,7 @@ class CollectionsPaginator:
         # Counter of the sequence number of the displayed collection
         self.collection_index = 0
         #TODO: здесь возникает исключение, если all_collections is None
+
         self.current_collection_id = self.all_collections[self.collection_index][1]
         # Number of collections to display
         self.collections_number = len(self.all_collections)
