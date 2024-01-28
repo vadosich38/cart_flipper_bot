@@ -2,10 +2,10 @@ import logging
 
 
 
-
+print('Инициализация логгера')
 # Initialize system logger
-logger = logging.getLogger('SYSTEM')
-logging.basicConfig(level=logging.INFO,
-                    filename='log.log',
-                    format='%(asctime)s [%(levelname)s] %(message)s',
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
                     datefmt='%H:%M:%S')
+logger = logging.getLogger('SYSTEM')
+

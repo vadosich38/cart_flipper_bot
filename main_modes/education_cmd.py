@@ -9,7 +9,7 @@ from keyboards.cards_paginator_ikb import get_cards_paginator_ikb as cards_pag_i
 from bot_set.cards_paginator_class import CardsPaginator
 from bot_set.data_formats_handlers import send_card_element
 from keyboards.main_menu_kb import get_main_kb
-
+from loader import logger
 education_cmd_router = Router()
 
 
@@ -24,6 +24,7 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
         None
     """
     await state.set_state(BotStates.teaching)
+    logger.debug('Creating paginator instance')
     cards_pag_inst = CardsPaginator(telegram_id=message.from_user.id)
 
     if cards_pag_inst.card_values:

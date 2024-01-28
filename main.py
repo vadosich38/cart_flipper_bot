@@ -5,6 +5,7 @@ import logging
 from aiogram import Bot
 import asyncio
 from DBPackage.DBclass import DBMethods
+import loader
 
 from main_modes.start_cmd import start_router
 from main_modes.start_cmd import start_cmd

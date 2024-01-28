@@ -43,24 +43,26 @@ class DBMethods:
             CREATE TABLE IF NOT EXISTS Users (
                 user_id INTEGER PRIMARY KEY,
                 telegram_id INTEGER NOT NULL
-            );
+            )''')
 
+        cur.execute('''
             CREATE TABLE IF NOT EXISTS Collections (
                 collection_id INTEGER PRIMARY KEY,
                 collection_name TEXT NOT NULL,
                 status BOOL NOT NULL,
                 user_id INTEGER,
                 FOREIGN KEY (user_id) REFERENCES Users(user_id)
-            );
+            )''')
 
+        cur.execute('''
             CREATE TABLE IF NOT EXISTS Cards (
                 card_id INTEGER PRIMARY KEY,
                 card_value_1 TEXT NOT NULL,
                 card_value_2 TEXT NOT NULL,
                 collection_id INTEGER,
                 FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
-            );
-        ''')
+            )''')
+
 
     @staticmethod
     @connect
