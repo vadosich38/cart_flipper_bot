@@ -58,7 +58,9 @@ class DBMethods:
             CREATE TABLE IF NOT EXISTS Cards (
                 card_id INTEGER PRIMARY KEY,
                 card_value_1 TEXT NOT NULL,
+                value1_type TEXT NOT NULL,
                 card_value_2 TEXT NOT NULL,
+                value2_type TEXT NOT NULL,
                 collection_id INTEGER,
                 FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
             )''')
@@ -153,8 +155,8 @@ class DBMethods:
         """
         logger.debug(f'Making card record in collection in database')
         cur.execute(
-            """INSERT OR IGNORE INTO Cards (card_value_1, value1_type, card_value_2, value2_type, status, 
-            collection_id) VALUES (?, ?, ?, ?, ?),
+            """INSERT INTO Cards (card_value_1, value1_type, card_value_2, value2_type, collection_id) 
+            VALUES (?, ?, ?, ?, ?)
             """,
             (card_value_1, value1_type, card_value_2, value2_type, collection_id,))
 
@@ -234,6 +236,7 @@ class DBMethods:
             List of tuples containing card_id, card_value_1, value1_type, card_value_2, value2_type.
         """
         logger.debug(f'Getting card values from the active collection for telegram_id: {telegram_id}')
+        #TODO: возвразщает всегда None. Правильно написан запрос?
 
         # Retrieve the card values from the active collection for the given user
         cur.execute('''
