@@ -24,11 +24,11 @@ async def set_mirror_mode(callback_data: CallbackQuery, state: FSMContext) -> No
     await callback_data.answer(text="Добавить карточку зеркально 🟢")
     data = await state.get_data()
     # First card adding
-    DBMethods.add_card_by_collection_id(collection_id=data["new_coll_id"],
+    DBMethods.add_card_by_collection_id(collection_id=data["cur_coll_id"],
                                         card_value_1=data["first_elem_value"], value1_type=data["first_elem_type"],
                                         card_value_2=data["second_elem_value"], value2_type=data["second_elem_type"])
     # Second card adding
-    DBMethods.add_card_by_collection_id(collection_id=data["new_coll_id"],
+    DBMethods.add_card_by_collection_id(collection_id=data["cur_coll_id"],
                                         card_value_1=data["second_elem_value"], value1_type=data["second_elem_type"],
                                         card_value_2=data["first_elem_value"], value2_type=data["first_elem_type"])
 
@@ -52,7 +52,7 @@ async def set_no_mirror_mode(callback_data: CallbackQuery, state: FSMContext) ->
     data = await state.get_data()
 
     # Card adding
-    DBMethods.add_card_by_collection_id(collection_id=data["new_coll_id"],
+    DBMethods.add_card_by_collection_id(collection_id=data["cur_coll_id"],
                                         card_value_1=data["first_elem_value"], value1_type=data["first_elem_type"],
                                         card_value_2=data["second_elem_value"], value2_type=data["second_elem_type"])
 
