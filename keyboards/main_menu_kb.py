@@ -7,7 +7,7 @@ def get_main_kb() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="Учиться 🧑‍🏫"),
              KeyboardButton(text="Коллекции 📜")]
         ],
-        resize_keyboard=True
+        resize_keyboard=True, one_time_keyboard=True
     )
 
     return main_kb

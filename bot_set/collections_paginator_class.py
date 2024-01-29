@@ -25,8 +25,9 @@ class CollectionsPaginator:
             str: message text for the collection.
         """
         current_collection = self.all_collections[self.collection_index]
-        return (f"{current_collection[0]}\n"
-                f"Статус: {current_collection[2]}\n"
+        current_collection_status = "Активна 🟢" if current_collection[2] == 1 else "Не активна 🔴"
+        return (f"Название коллекции: {current_collection[0]}\n"
+                f"Статус: {current_collection_status}\n"
                 f"Количество карточек в коллекции: {current_collection[3]}")
 
     def next(self) -> str:
@@ -46,8 +47,9 @@ class CollectionsPaginator:
         self.current_collection_id = self.all_collections[self.collection_index][1]
 
         # Returns next collection data
-        return (f"{current_collection[0]}\n"
-                f"Статус: {current_collection[2]}\n"
+        current_collection_status = "Активна 🟢" if current_collection[2] == 1 else "Не активна 🔴"
+        return (f"Название коллекции: {current_collection[0]}\n"
+                f"Статус: {current_collection_status}\n"
                 f"Количество карточек в коллекции: {current_collection[3]}")
 
     def previous(self) -> str:
@@ -68,6 +70,7 @@ class CollectionsPaginator:
         self.current_collection_id = self.all_collections[self.collection_index][1]
 
         # Returns next collection data
-        return (f"{current_collection[0]}\n"
-                f"Статус: {current_collection[2]}\n"
+        current_collection_status = "Активна 🟢" if current_collection[2] == 1 else "Не активна 🔴"
+        return (f"Название коллекции: {current_collection[0]}\n"
+                f"Статус: {current_collection_status}\n"
                 f"Количество карточек в коллекции: {current_collection[3]}")
