@@ -13,7 +13,8 @@ def get_collections_paginator_ikb() -> InlineKeyboardMarkup:
     ]
 
     builder.row(*nav_buttons)
-    builder.row(InlineKeyboardButton(text='Вернуться в главное меню ⬅️',
+    builder.row(InlineKeyboardButton(text='Вернуться в меню ⬅️',
                                      callback_data='collections_paginator_menu'),
-                InlineKeyboardButton(text="Добавить новую коллекцию ➕", callback_data="add_new_collection"))
+                InlineKeyboardButton(text="Добавить коллекцию ➕", callback_data="add_new_collection"))
+    builder.row(InlineKeyboardButton(text="Удалить коллекцию ❌", callback_data="del_collection"))
     return builder.as_markup(resize_keyboard=True)

@@ -21,16 +21,22 @@ async def edit_collection_callback(callback_data: CallbackQuery, state: FSMConte
     #вызывает сценарий collection_edit_handlers22
     await state.set_state(BotStates.collection_editing)
     await callback_data.answer(text="Редактировать коллекцию 🟩")
-
     data = await state.get_data()
     # Получаем инстанс класса пагинатора коллекций, из него получаем параметр равный id текущей коллекции
     cur_coll_id = data["coll_pag_inst"].current_collection_id
 
     spec_coll_pag_inst = SpecCollCardsPaginator(collection_id=cur_coll_id)
 
-    #возвращаем пагинацией список карточек из выбранной коллекции
-    # + ikb с кнопками функциональности работы с редактированием коллекции
-    await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
-                                        text=spec_coll_pag_inst.start(),
-                                        reply_markup=get_collection_edit_menu_ikb(collection_id=cur_coll_id))
+    if spec_coll_pag_inst.card_values:
+        #возвращаем пагинацией список карточек из выбранной коллекции
+        # + ikb с кнопками функциональности работы с редактированием коллекции
+        await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+                                            text=spec_coll_pag_inst.start(),
+                                            reply_markup=get_collection_edit_menu_ikb(collection_id=cur_coll_id))
+    else:
+        await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
+                                            text="В этой коллекции еще нет карточек! 🫣\nВы можете добавить их сейчас ➕",
+                                            reply_markup=get_collection_edit_menu_ikb(collection_id=cur_coll_id,
+                                                                                      collection_is_empy=True))
     await state.set_data({"spec_coll_pag_inst": spec_coll_pag_inst, "cur_coll_id": cur_coll_id})
+

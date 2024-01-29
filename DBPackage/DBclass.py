@@ -106,7 +106,7 @@ class DBMethods:
         Returns:
             None
         """
-        #TODO: нрет проверки на существование пользователя
+        #TODO: нет проверки на существование пользователя
         logger.debug(f'Making user:{telegram_id} record in database')
         cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
 
@@ -372,3 +372,9 @@ class DBMethods:
             SET {update_column} = ?, {update_type_column} = ?
             WHERE card_id = ?
         ''', (card_value, card_value_type, card_id,))
+
+    @staticmethod
+    @connect
+    def delete_collection_by_id(collection_id: int) -> None:
+        pass
+        #TODO: нужно реализовать метод удаления коллекция по айди коллекции

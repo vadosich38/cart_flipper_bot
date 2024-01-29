@@ -17,7 +17,8 @@ class SpecCollCardsPaginator:
         self.collection_id = collection_id
         self.cur_card_id = 0
         self.cur_card_index = 0
-        self.cards_count = len(self.card_values)
+        if self.card_values:
+            self.cards_count = len(self.card_values)
 
     def start(self) -> list:
         """Get the value of the current card.
