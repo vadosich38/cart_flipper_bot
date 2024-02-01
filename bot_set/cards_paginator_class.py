@@ -12,9 +12,9 @@ class CardsPaginator:
     Attributes:
         card_values (List[Tuple[str, str, bool, int]]): List of card values from the active collection.
     """
-    def __init__(self, telegram_id: int):
+    def __init__(self, card_values):
         # Getting active collections cards
-        self.card_values = DBMethods.get_active_collections_cards(telegram_id=telegram_id)
+        self.card_values = card_values
         self.turned_card = False
         if self.card_values:
             random.shuffle(self.card_values)

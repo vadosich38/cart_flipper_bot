@@ -42,7 +42,7 @@ class DBMethods:
         cur.execute('''
             CREATE TABLE IF NOT EXISTS Users (
                 user_id INTEGER PRIMARY KEY,
-                telegram_id INTEGER NOT NULL
+                telegram_id INTEGER NOT NULL UNIQUE
             )''')
 
         cur.execute('''
@@ -108,7 +108,7 @@ class DBMethods:
         Returns:
             None
         """
-        #TODO: нет проверки на существование пользователя
+        #DONE: нет проверки на существование пользователя
         logger.debug(f'Making user:{telegram_id} record in database')
         cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
 
@@ -226,7 +226,7 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_active_collections_cards(cur, telegram_id: int) \
+    def get_active_collection_cards(cur, telegram_id: int) \
             -> List[Tuple[int, Union[str, int], str, Union[str, int], str]]:
         """Get a list of card values from the active collection for a user.
         Args:
@@ -236,7 +236,7 @@ class DBMethods:
             List of tuples containing card_id, card_value_1, value1_type, card_value_2, value2_type.
         """
         logger.debug(f'Getting card values from the active collection for telegram_id: {telegram_id}')
-        #TODO: возвразщает всегда None. Правильно написан запрос?
+        # DONE: возвразщает всегда None. Правильно написан запрос?
 
         # Retrieve the card values from the active collection for the given user
         cur.execute('''
@@ -343,7 +343,7 @@ class DBMethods:
     @staticmethod
     @connect
     def edit_card(cur, card_id: int, card_value: Union[str, int], card_value_type: str, elem_num: int) -> None:
-        #DONE: нужен метод, который будет принимать новые элементы карточки и перезаписывать их при редактировании карточки.
+        # DONE: нужен метод, который будет принимать новые элементы карточки и перезаписывать их при редактировании карточки.
         # принимает параметр card_id и производит поиск карточки по этому параметру
         # принимает card_value, card_value_type и elem_numm номер стороны карточки - 1 (будет elem1) или 2 (elem2).
         # затем записывает изменения в карточке
@@ -378,6 +378,19 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def delete_collection_by_id(collection_id: int) -> None:
-        pass
-        #TODO: нужно реализовать метод удаления коллекция по айди коллекции
+    def delete_collection_by_id(cur, collection_id: int) -> None:
+        # DONE: нужно реализовать метод удаления коллекция по айди коллекции
+        """Delete a collection and all its cards by collection_id.
+        Args:
+            cur: The SQLite cursor.
+            collection_id (int): ID of the collection to be deleted.
+        Returns:
+            None
+        """
+        logger.debug(f'Deleting collection with collection_id: {collection_id}')
+
+        # Delete all cards associated with the collection
+        cur.execute('DELETE FROM Cards WHERE collection_id = ?', (collection_id,))
+
+        # Delete the collection itself
+        cur.execute('DELETE FROM Collections WHERE collection_id = ?', (collection_id,))
