@@ -10,6 +10,7 @@ from bot_set.cards_paginator_class import CardsPaginator
 from bot_set.data_formats_handlers import send_card_element
 from keyboards.main_menu_kb import get_main_kb
 from loader import logger
+from DBPackage.DBclass import DBMethods
 education_cmd_router = Router()
 
 
@@ -25,9 +26,9 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
     """
     await state.set_state(BotStates.teaching)
     logger.debug('Creating paginator instance')
-    cards_pag_inst = CardsPaginator(telegram_id=message.from_user.id)
-
-    if cards_pag_inst.card_values:
+    active_collection_card_list = DBMethods.get_active_collection_cards(telegram_id=message.from_user.id)
+    if active_collection_card_list:
+        cards_pag_inst = CardsPaginator(active_collection_card_list)
         card_value = cards_pag_inst.start()
         send_card_element(user_id=message.from_user.id,
                           card_value=card_value[0],
@@ -37,5 +38,5 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
     else:
         await state.clear()
         await state.set_state(BotStates.main_menu)
-        await message.answer(text='У вас нет коллекция для изучения 🧑‍🏫\n\nАктивируйте коллекции или создайте новую ✅',
+        await message.answer(text='У вас нет активных коллекциий 🧑‍🏫\n\nАктивируйте коллекции✅',
                              reply_markup=get_main_kb())
