@@ -13,6 +13,8 @@ from aiogram import F
 @collection_edit_router.callback_query(F.data == "back_to_collections", StateFilter(BotStates.collection_editing))
 async def back_to_main_menu_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
     await callback_data.answer("Вернуться в главное меню ✅")
+    await card_flipper_bot.delete_message(chat_id=callback_data.from_user.id,
+                                          message_id=callback_data.message.message_id)
     await state.set_state(BotStates.main_menu)
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text=bot_texts["return_in_main_menu"],

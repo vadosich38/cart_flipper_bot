@@ -20,6 +20,8 @@ async def add_new_paar_callback(callback_data: CallbackQuery, state: FSMContext)
     #запускает сценарий pair_add_handlers221
     await state.set_state(BotStates.get_first_elem_new_pair_adding)
     await callback_data.answer(text="Добавляем новую карточку 🟢")
+    await card_flipper_bot.delete_message(chat_id=callback_data.from_user.id,
+                                          message_id=callback_data.message.message_id)
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,
                                         text="Пришлите первый элемент карточки 📂",
                                         reply_markup=get_cancel_kb())

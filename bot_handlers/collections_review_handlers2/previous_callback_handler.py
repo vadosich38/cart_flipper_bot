@@ -13,12 +13,16 @@ from keyboards.collections_paginator_ikb import get_collections_paginator_ikb
 
 @collections_review_router.callback_query(F.data == "previous", StateFilter(BotStates.collections_review))
 async def previous_collection_callback(callback_data: CallbackQuery, state: FSMContext) -> None:
-    await callback_data.answer(text="Предыдущая 🟢")
 
     data = await state.get_data()
     coll_pag_inst = data["coll_pag_inst"]
+    collection_id = coll_pag_inst.current_collection_id
 
-    await card_flipper_bot.edit_message_text(text=coll_pag_inst.previous(),
-                                             chat_id=callback_data.from_user.id,
-                                             message_id=callback_data.message.message_id,
-                                             reply_markup=get_collections_paginator_ikb())
+    if coll_pag_inst.collections_number > 1:
+        await callback_data.answer(text="Предыдущая 🟢")
+        await card_flipper_bot.edit_message_text(text=coll_pag_inst.previous(),
+                                                 chat_id=callback_data.from_user.id,
+                                                 message_id=callback_data.message.message_id,
+                                                 reply_markup=get_collections_paginator_ikb(collection_id=collection_id))
+    else:
+        await callback_data.answer(text="У вас только одна коллекция 🔴")
