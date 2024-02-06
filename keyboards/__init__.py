@@ -7,5 +7,6 @@ from .main_menu_kb import get_main_kb
 from .pair_edit_keyboard import get_pair_edit_kb
 from .yes_no_ikb import get_yes_no_ikb
 from .create_first_collection_ikb import get_button_create_first_collection
+from .to_study_kb import get_to_study_notification_kb
 
 print("Keyboards inited")

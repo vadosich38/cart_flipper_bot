@@ -4,6 +4,12 @@ from typing import List, Tuple, Union
 
 
 class DBMethods:
+    #TODO: нужны 5 методов:
+    # 1. - Получить telegram id всех активных пользователей -> list
+    # 2. - Актуализировать (изменить) дату и время последней активности пользователя (запись str в тиблицу)
+    # 3. - Деактивировать пользователя (установить 0 False в столбец активности юзера)
+    # 4. - Метод добавления в столбец next_lesson 20 минут от момента добавления new_time = current_time + timedelta(minutes=20) конкретному пользователю по телеграм айди
+    # 5. - Метод получения next_lesson -> class 'datetime.datetime'
     DATABASE_NAME = 'main.db'
 
     @staticmethod
@@ -38,6 +44,8 @@ class DBMethods:
         Returns:
             None
         """
+        #TODO: нужно добавить две строки: статус пользователя Актив или не актив (0, 1) и дату последней активности
+        # также столбец "next lesson" с типом class 'datetime.datetime'
         logger.debug('Creating database tables')
         cur.execute('''
             CREATE TABLE IF NOT EXISTS Users (
@@ -101,6 +109,11 @@ class DBMethods:
     @staticmethod
     @connect
     def add_user(cur, telegram_id: int) -> None:
+        #TODO: при создании пользователя нужно также передавать статус и дату активности.
+        # При создании пользователь всегда актив, дата записывается из метода datetime.now()
+        # если пользователь существует в базе и статус активности == 0 (не активен),
+        # то нужно сменить на 1 (активен) и обновить дату активности
+        # next_lesson устанавливается в текущее время datetime.now() тип данных class 'datetime.datetime'
         """Add user record to the database
         Args:
             cur: The SQLite cursor.
@@ -108,7 +121,6 @@ class DBMethods:
         Returns:
             None
         """
-        #DONE: нет проверки на существование пользователя
         logger.debug(f'Making user:{telegram_id} record in database')
         cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
 
@@ -226,7 +238,7 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_active_collection_cards(cur, telegram_id: int) \
+    def get_active_collections_cards(cur, telegram_id: int) \
             -> List[Tuple[int, Union[str, int], str, Union[str, int], str]]:
         """Get a list of card values from the active collection for a user.
         Args:
@@ -236,11 +248,9 @@ class DBMethods:
             List of tuples containing card_id, card_value_1, value1_type, card_value_2, value2_type.
         """
         logger.debug(f'Getting card values from the active collection for telegram_id: {telegram_id}')
-        # DONE: возвразщает всегда None. Правильно написан запрос?
-
         # Retrieve the card values from the active collection for the given user
         cur.execute('''
-            SELECT с.card_id, c.card_value_1, c.value1_type, c.card_value_2, c.value2_type
+            SELECT c.card_id, c.card_value_1, c.value1_type, c.card_value_2, c.value2_type
             FROM Cards c
             JOIN Collections col ON c.collection_id = col.collection_id
             JOIN Users u ON col.user_id = u.user_id
@@ -379,7 +389,6 @@ class DBMethods:
     @staticmethod
     @connect
     def delete_collection_by_id(cur, collection_id: int) -> None:
-        # DONE: нужно реализовать метод удаления коллекция по айди коллекции
         """Delete a collection and all its cards by collection_id.
         Args:
             cur: The SQLite cursor.

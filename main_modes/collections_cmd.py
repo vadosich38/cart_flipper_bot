@@ -23,9 +23,11 @@ collections_cmd_router = Router()
 async def collections_cmd(message: Message, state: FSMContext) -> None:
     await state.set_state(BotStates.collections_review)
     coll_pag_inst = CollectionsPaginator(telegram_id=message.from_user.id)
+
     if coll_pag_inst.all_collections:
+        collection_id = coll_pag_inst.current_collection_id
         await message.answer(text=coll_pag_inst.start(),
-                             reply_markup=get_collections_paginator_ikb())
+                             reply_markup=get_collections_paginator_ikb(collection_id=collection_id))
 
         await state.set_data({"coll_pag_inst": coll_pag_inst})
     else:

@@ -21,7 +21,7 @@ async def collection_filling_callback(callback_data: CallbackQuery, state: FSMCo
     collection_id = DBMethods.get_collection_id_by_collection_name_and_telegram_id(
         collection_name=data["new_coll_name"],
         telegram_id=callback_data.from_user.id)
-    await state.update_data({"new_coll_id": collection_id})
+    await state.update_data({"cur_coll_id": collection_id})
 
     await callback_data.answer(text="Добавить карточки в коллекцию 🟩")
     await card_flipper_bot.send_message(chat_id=callback_data.from_user.id,

@@ -38,7 +38,7 @@ class SpecCollCardsPaginator:
         else:
             self.cur_card_index -= 1
 
-        self.cur_card_id = self.card_values[0][0]
+        self.cur_card_id = self.card_values[self.cur_card_index][0]
         self.turned_card = False
 
         # Returns previous card value
@@ -54,7 +54,7 @@ class SpecCollCardsPaginator:
         else:
             self.cur_card_index += 1
 
-        self.cur_card_id = self.card_values[0][0]
+        self.cur_card_id = self.card_values[self.cur_card_index][0]
         self.turned_card = False
 
         # Returns next card value
@@ -68,7 +68,7 @@ class SpecCollCardsPaginator:
         # Returns second
         if self.turned_card:
             self.turned_card = False
-            return [self.card_values[0][1], self.card_values[0][2]]
+            return [self.card_values[self.cur_card_index][1], self.card_values[self.cur_card_index][2]]
         else:
             self.turned_card = True
-            return [self.card_values[0][3], self.card_values[0][4]]
+            return [self.card_values[self.cur_card_index][3], self.card_values[self.cur_card_index][4]]

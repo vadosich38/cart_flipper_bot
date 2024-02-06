@@ -5,6 +5,7 @@ from typing import Union
 
 
 class CardsPaginator:
+    #TODO: проверить чтобы не возникало исключение если остался только один элемент
     #TODO: изменить класс с учетом изсенений метода БД get_active_collections_cards
     """Paginator class for handling card navigation.
     Args:
@@ -16,8 +17,7 @@ class CardsPaginator:
         # Getting active collections cards
         self.card_values = card_values
         self.turned_card = False
-        if self.card_values:
-            random.shuffle(self.card_values)
+        random.shuffle(self.card_values)
 
     def start(self) -> tuple[Union[str, int], str]:
         """Get the value of the current card.
@@ -59,4 +59,4 @@ class CardsPaginator:
         self.turned_card = False
 
         # Getting value from the next card of return None
-        return self.card_values[0][1], self.card_values[0][2] if self.card_values[0][1] else None
+        return (self.card_values[0][1], self.card_values[0][2]) if self.card_values else None

@@ -24,16 +24,18 @@ async def edit_pair_callback(callback_data: CallbackQuery, state: FSMContext) ->
     #вызывает сценарий pair_edit_handlers222
     #присылает первый элемент редактируемой карточки и приглашает ее изменить, прикреплена инлайн клавиатура
     # с кнопками 'оставить без изменений' и "отменить редактирование пары"
-    await callback_data.answer(text="Редактировать пару 🟢")
+    await callback_data.answer(text="Редактировать пару 🟢"
+                                    "\nДля рекдактирования пары пришлите новый "
+                                    "элемент или нажмите оставить без изменений 🤖", show_alert=True)
     data = await state.get_data()
     # из инстанса класса получаем айди текущей карточки
     cur_card_id = data["spec_coll_pag_inst"].cur_card_id
     #TODO: вместо этого метода можно в пагинатор добавить метод "получить текущую карточку повторно"
     cur_card = DBMethods.get_card_by_id(card_id=cur_card_id)
 
-    send_card_element(user_id=callback_data.from_user.id,
-                      card_value=cur_card[1],
-                      card_value_type=cur_card[2],
-                      keyboard=get_pair_edit_kb())
+    await send_card_element(user_id=callback_data.from_user.id,
+                            card_value=cur_card[1],
+                            card_value_type=cur_card[2],
+                            keyboard=get_pair_edit_kb())
 
     await state.set_state(BotStates.pair_editing_change_first_elem)
