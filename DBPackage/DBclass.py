@@ -1,10 +1,10 @@
 import sqlite3
 from loader import logger
 from typing import List, Tuple, Union
-
+from datetime import datetime, timedelta
 
 class DBMethods:
-    #TODO: нужны 5 методов:
+    #Done: нужны 5 методов:
     # 1. - Получить telegram id всех активных пользователей -> list
     # 2. - Актуализировать (изменить) дату и время последней активности пользователя (запись str в тиблицу)
     # 3. - Деактивировать пользователя (установить 0 False в столбец активности юзера)
@@ -44,34 +44,37 @@ class DBMethods:
         Returns:
             None
         """
-        #TODO: нужно добавить две строки: статус пользователя Актив или не актив (0, 1) и дату последней активности
+        #DONE: нужно добавить две строки: статус пользователя Актив или не актив (0, 1) и дату последней активности
         # также столбец "next lesson" с типом class 'datetime.datetime'
         logger.debug('Creating database tables')
         cur.execute('''
-            CREATE TABLE IF NOT EXISTS Users (
-                user_id INTEGER PRIMARY KEY,
-                telegram_id INTEGER NOT NULL UNIQUE
-            )''')
+                    CREATE TABLE IF NOT EXISTS Users (
+                        user_id INTEGER PRIMARY KEY,
+                        telegram_id INTEGER NOT NULL UNIQUE,
+                        active_status BOOL NOT NULL,
+                        last_activity_date TIMESTAMP NOT NULL,
+                        next_lesson TIMESTAMP
+                    )''')
 
         cur.execute('''
-            CREATE TABLE IF NOT EXISTS Collections (
-                collection_id INTEGER PRIMARY KEY,
-                collection_name TEXT NOT NULL,
-                status BOOL NOT NULL,
-                user_id INTEGER,
-                FOREIGN KEY (user_id) REFERENCES Users(user_id)
-            )''')
+                    CREATE TABLE IF NOT EXISTS Collections (
+                        collection_id INTEGER PRIMARY KEY,
+                        collection_name TEXT NOT NULL,
+                        status BOOL NOT NULL,
+                        user_id INTEGER,
+                        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+                    )''')
 
         cur.execute('''
-            CREATE TABLE IF NOT EXISTS Cards (
-                card_id INTEGER PRIMARY KEY,
-                card_value_1 TEXT NOT NULL,
-                value1_type TEXT NOT NULL,
-                card_value_2 TEXT NOT NULL,
-                value2_type TEXT NOT NULL,
-                collection_id INTEGER,
-                FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
-            )''')
+                    CREATE TABLE IF NOT EXISTS Cards (
+                        card_id INTEGER PRIMARY KEY,
+                        card_value_1 TEXT NOT NULL,
+                        value1_type TEXT NOT NULL,
+                        card_value_2 TEXT NOT NULL,
+                        value2_type TEXT NOT NULL,
+                        collection_id INTEGER,
+                        FOREIGN KEY (collection_id) REFERENCES Collections(collection_id)
+                    )''')
 
     @staticmethod
     @connect
@@ -109,7 +112,7 @@ class DBMethods:
     @staticmethod
     @connect
     def add_user(cur, telegram_id: int) -> None:
-        #TODO: при создании пользователя нужно также передавать статус и дату активности.
+        #Done: при создании пользователя нужно также передавать статус и дату активности.
         # При создании пользователь всегда актив, дата записывается из метода datetime.now()
         # если пользователь существует в базе и статус активности == 0 (не активен),
         # то нужно сменить на 1 (активен) и обновить дату активности
@@ -123,6 +126,12 @@ class DBMethods:
         """
         logger.debug(f'Making user:{telegram_id} record in database')
         cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
+        # Checking if the user exists and is inactive, if so, activate them and update last activity date
+        cur.execute('''
+            UPDATE Users 
+            SET active_status = 1, last_activity_date = CURRENT_TIMESTAMP 
+            WHERE telegram_id = ? AND active_status = 0
+        ''', (telegram_id,))
 
     @staticmethod
     @connect
@@ -403,3 +412,78 @@ class DBMethods:
 
         # Delete the collection itself
         cur.execute('DELETE FROM Collections WHERE collection_id = ?', (collection_id,))
+
+    @staticmethod
+    @connect
+    def get_active_users_telegram_ids(cur) -> list:
+        """Get the telegram IDs of all active users.
+        Args:
+            cur: The SQLite cursor.
+        Returns:
+            list: List of active users' telegram IDs.
+        """
+        logger.debug('Getting telegram IDs of all active users')
+        cur.execute('SELECT telegram_id FROM Users WHERE active_status = 1')
+        result = cur.fetchall()
+        telegram_ids = [row[0] for row in result]
+        return telegram_ids
+
+    @staticmethod
+    @connect
+    def update_last_activity(cur, telegram_id: int) -> None:
+        """Update the last activity date and time for a user.
+        Args:
+            cur: The SQLite cursor.
+            telegram_id (int): Telegram user ID.
+        Returns:
+            None
+        """
+        logger.debug(f'Updating last activity for user: {telegram_id}')
+        cur.execute('UPDATE Users SET last_activity_date = CURRENT_TIMESTAMP WHERE telegram_id = ?', (telegram_id,))
+
+    @staticmethod
+    @connect
+    def deactivate_user(cur, telegram_id: int) -> None:
+        """Deactivate a user.
+        Args:
+            cur: The SQLite cursor.
+            telegram_id (int): Telegram user ID.
+        Returns:
+            None
+        """
+        logger.debug(f'Deactivating user: {telegram_id}')
+        cur.execute('UPDATE Users SET active_status = 0 WHERE telegram_id = ?', (telegram_id,))
+
+    @staticmethod
+    @connect
+    def set_next_lesson(cur, telegram_id: int) -> None:
+        """Set the next lesson for a user 20 minutes from the current time.
+        Args:
+            cur: The SQLite cursor.
+            telegram_id (int): Telegram user ID.
+        Returns:
+            None
+        """
+        logger.debug(f'Setting next lesson for user: {telegram_id}')
+        new_time = datetime.now() + timedelta(minutes=20)
+        cur.execute('UPDATE Users SET next_lesson = ? WHERE telegram_id = ?', (new_time, telegram_id))
+
+    @staticmethod
+    @connect
+    def get_next_lesson(cur, telegram_id: int) -> datetime or None:
+        """Get the next lesson datetime for a user.
+        Args:
+        cur: The SQLite cursor.
+        telegram_id (int): Telegram user ID.
+        Returns:
+        datetime: The datetime of the next lesson.
+        """
+        logger.debug(f'Getting next lesson for user: {telegram_id}')
+        cur.execute('SELECT next_lesson FROM Users WHERE telegram_id = ?', (telegram_id,))
+        result = cur.fetchone()
+        if result:
+            next_lesson = result[0]
+            return next_lesson
+        else:
+            logger.warning(f'Next lesson not found for user: {telegram_id}')
+            return None
