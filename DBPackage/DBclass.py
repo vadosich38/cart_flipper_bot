@@ -3,6 +3,7 @@ from loader import logger
 from typing import List, Tuple, Union
 from datetime import datetime, timedelta
 
+
 class DBMethods:
     #Done: нужны 5 методов:
     # 1. - Получить telegram id всех активных пользователей -> list
@@ -124,14 +125,25 @@ class DBMethods:
         Returns:
             None
         """
+        time_now = datetime.now()
         logger.debug(f'Making user:{telegram_id} record in database')
-        cur.execute('INSERT OR IGNORE INTO Users (telegram_id) VALUES (?)', (telegram_id,))
+        cur.execute('INSERT OR IGNORE INTO Users (telegram_id, active_status, last_activity_date, next_lesson) '
+                    'VALUES (?, ?, ?, ?)',
+                    (telegram_id, 1, time_now, time_now,))
+
+        # Checking if the user exists and is active, if so, update last activity date
+        cur.execute('''
+            UPDATE Users 
+            SET last_activity_date = ? 
+            WHERE telegram_id = ? AND active_status = 1
+        ''', (time_now, telegram_id,))
+
         # Checking if the user exists and is inactive, if so, activate them and update last activity date
         cur.execute('''
             UPDATE Users 
-            SET active_status = 1, last_activity_date = CURRENT_TIMESTAMP 
+            SET active_status = 1, last_activity_date = ? 
             WHERE telegram_id = ? AND active_status = 0
-        ''', (telegram_id,))
+        ''', (time_now, telegram_id,))
 
     @staticmethod
     @connect
@@ -439,7 +451,7 @@ class DBMethods:
             None
         """
         logger.debug(f'Updating last activity for user: {telegram_id}')
-        cur.execute('UPDATE Users SET last_activity_date = CURRENT_TIMESTAMP WHERE telegram_id = ?', (telegram_id,))
+        cur.execute('UPDATE Users SET last_activity_date = ? WHERE telegram_id = ?', (datetime.now(), telegram_id,))
 
     @staticmethod
     @connect
@@ -470,7 +482,7 @@ class DBMethods:
 
     @staticmethod
     @connect
-    def get_next_lesson(cur, telegram_id: int) -> datetime or None:
+    def get_next_lesson(cur, telegram_id: int) -> datetime:
         """Get the next lesson datetime for a user.
         Args:
         cur: The SQLite cursor.
@@ -482,8 +494,8 @@ class DBMethods:
         cur.execute('SELECT next_lesson FROM Users WHERE telegram_id = ?', (telegram_id,))
         result = cur.fetchone()
         if result:
-            next_lesson = result[0]
-            return next_lesson
+            #возвращаем объект datetime для сравнения
+            return datetime.strptime(result[0], '%Y-%m-%d %H:%M:%S.%f')
         else:
             logger.warning(f'Next lesson not found for user: {telegram_id}')
-            return None
+            return datetime.now()

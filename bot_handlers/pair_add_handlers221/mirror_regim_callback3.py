@@ -26,8 +26,6 @@ async def set_mirror_mode(callback_data: CallbackQuery, state: FSMContext) -> No
     await card_flipper_bot.delete_message(chat_id=callback_data.from_user.id,
                                           message_id=callback_data.message.message_id)
     data = await state.get_data()
-    print(f"first_elem_value: {data["first_elem_value"]}, first_elem_type: {data["first_elem_type"]},"
-          f"second_elem_value: {data["second_elem_value"]}, second_elem_type: {data["second_elem_type"]}")
     # First card adding
     DBMethods.add_card_by_collection_id(collection_id=data["cur_coll_id"],
                                         card_value_1=data["first_elem_value"], value1_type=data["first_elem_type"],
