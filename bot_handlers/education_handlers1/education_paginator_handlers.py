@@ -10,6 +10,7 @@ from keyboards.back_to_main_menu import get_return_in_main_menu_kb as return_to_
 from keyboards.main_menu_kb import get_main_kb
 from bot_set.data_formats_handlers import send_card_element
 from bot_set.bot_object import card_flipper_bot
+from DBPackage.DBclass import DBMethods
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_show_value', StateFilter(BotStates.teaching))
@@ -88,9 +89,10 @@ async def paginator_card_learned(callback_data: CallbackQuery, state: FSMContext
                                             reply_markup=get_main_kb())
 
         await state.set_state(BotStates.main_menu)
+        DBMethods.set_next_lesson(telegram_id=callback_data.from_user.id)
         #TODO: здесь должна устанавливаться пауза на обучение и при дейсвтии паузы вкладка "обучение" не должна работать
         # а будет обрабатываться отдельным хендлером с сообщением о том, сколько осталось подождать
-        # пори этом редактирование коллекций должно быть доступно!
+        # при этом редактирование коллекций должно быть доступно!
 
 
 @education_cmd_router.callback_query(F.data == 'paginator_menu', StateFilter(BotStates.teaching))

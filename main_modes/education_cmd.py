@@ -26,8 +26,8 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
     Returns:
         None
     """
-    #TODO: здесь нужно получить из БД параметр next_lesson и проверить, нет ли паузы у пользователя
-    next_lesson_at = datetime.now()
+    #проверяем является ли нынешнее время позже, чем то, до которого должна длиться пауза.
+    next_lesson_at = DBMethods.get_next_lesson(telegram_id=message.from_user.id)
     if next_lesson_at < datetime.now():
         await state.set_state(BotStates.teaching)
         logger.debug('Creating paginator instance')
@@ -46,5 +46,7 @@ async def education_cmd(message: Message, state: FSMContext) -> None:
             await message.answer(text='У вас нет активных коллекциий 🧑‍🏫\n\nАктивируйте коллекции✅',
                                  reply_markup=get_main_kb())
     else:
-        pass
-        #TODO: отправить уведомление, что еще нужно выждать паузу между уроками!
+        await message.answer(text="Вам еще рано повторять урок ❌\n\n"
+                                  "После каждого урока нужно отдыхать не меньше 20 минут."
+                                  "В противном случае система запоминания не будет работать эффективно 🫣\n\n",
+                             reply_markup=get_main_kb())
