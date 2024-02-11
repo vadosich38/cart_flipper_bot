@@ -5,7 +5,8 @@ import logging
 from aiogram import Bot
 import asyncio
 from DBPackage.DBclass import DBMethods
-import loader
+
+from notifications_branch.notification import scheduler
 
 from main_modes.start_cmd import start_router
 from main_modes.start_cmd import start_cmd
@@ -55,6 +56,8 @@ from bot_handlers.pair_edit_handlers222.cancel_cmd import cancel_pair_editing
 from bot_handlers.pair_edit_handlers222.first_elem_edit_handler1 import get_first_elem, first_elem_leave_unchanged
 from bot_handlers.pair_edit_handlers222.second_elem_edit_handler2 import get_second_elem, second_elem_leave_unchanged
 
+from notifications_branch.education_from_notification import education_from_notification_cmd
+from notifications_branch.notification_ignore import ignore_notification_cmd
 
 from bot_set.dispatcher_object import card_flipper_dp
 from bot_set.bot_object import card_flipper_bot
@@ -84,7 +87,7 @@ async def main() -> None:
 
         try:
             #поллинг
-            await card_flipper_dp.start_polling(card_flipper_bot)
+            await asyncio.gather(scheduler(), card_flipper_dp.start_polling(card_flipper_bot))
         except Exception as error_obj:
             print("При поллинге бота возникла ошибка,", error_obj)
         finally:
@@ -93,5 +96,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
