@@ -1,18 +1,16 @@
-#TODO: обработать нажатие кнопки "напомнить позже"
+import asyncio
+
 from bot_set.bot_object import card_flipper_bot
 from DBPackage.DBclass import DBMethods
 from keyboards.to_study_kb import get_to_study_notification_kb
 
 
 async def send_notification():
-    print("вызов сенд нотиф")
-    #TODO: нужно ли очищать и менять стейт?
     active_users = DBMethods.get_active_users_telegram_ids()
     success_counter = 0
     error_counter = 0
     for i_user in active_users:
         try:
-            print("Попытка отправить")
             await card_flipper_bot.send_message(chat_id=i_user,
                                                 text="Пришло время пройти урок, начни прямо сейчас 🧑‍🏫",
                                                 reply_markup=get_to_study_notification_kb())
@@ -24,3 +22,9 @@ async def send_notification():
             DBMethods.deactivate_user(telegram_id=i_user)
         finally:
             print(f"Успешно отправлено {success_counter} уведомлений, {error_counter} отправок привели к ошибке")
+
+
+async def scheduler():
+    while True:
+        await send_notification()
+        await asyncio.sleep(24 * 3600)
